@@ -2,21 +2,28 @@
 
 set -euo pipefail
 
-for file in dist/*.d.ts dist/structs/*.d.ts; do
-  mv $file "${file%.d.ts}.d.cts"
-  cp "${file%.d.ts}.d.cts" "${file%.d.ts}.d.mts"
+echo "Splitting *.d.ts files into *.d.cts and *.d.mts"
+find dist -name '*.d.ts' -print0 | while IFS= read -r -d $'\0' file; do
+  echo "  $file -> ${file%.d.ts}.d.cts"
+  cp "$file" "${file%.d.ts}.d.cts"
+  echo "  $file -> ${file%.d.ts}.d.mts"
+  cp "$file" "${file%.d.ts}.d.mts"
+  rm "$file"
 done
 
-for file in dist/*.d.cts dist/structs/*.d.cts; do
-  echo "File: $file"
+echo "Processing *.d.cts files to replace instances of .d.ts with .d.cts and .js with .cjs"
+find dist -name '*.d.cts' -print0 | while IFS= read -r -d $'\0' file; do
+  echo "  $file"
   sed -e 's/\.d\.ts/.d.cts/' -i.bak "$file"
   sed -e 's/\.js/.cjs/' -i.bak "$file"
 done
 
-for file in dist/*.d.mts dist/structs/*.d.mts; do
-  echo "File: $file"
-  sed -e 's/\.d\.ts/\.d\.mts/' -i.bak "$file"
+echo "Processing *.d.mts files to replace instances of .d.ts with .d.mts and .js with .mjs"
+find dist -name '*.d.mts' -print0 | while IFS= read -r -d $'\0' file; do
+  echo "  $file"
+  sed -e 's/\.d\.ts/.d.mts/' -i.bak "$file"
   sed -e 's/\.js/.mjs/' -i.bak "$file"
 done
 
-find dist -name '*.bak' | xargs rm
+echo "Removing backup files"
+find dist -name '*.bak' -print0 | xargs -0 rm
