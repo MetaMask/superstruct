@@ -1,7 +1,7 @@
-import { deprecated, number } from '../../../src'
+import { deprecated, number } from '../../../src';
 
-export const Struct = deprecated(number(), () => {})
+export const Struct = deprecated(number(), () => {});
 
-export const data = undefined
+export const data = undefined;
 
-export const output = undefined
+export const output = undefined;

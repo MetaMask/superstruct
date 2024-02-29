@@ -1,11 +1,12 @@
-import { Context, Struct, Validator } from '../struct.js'
-import {
+import type { Context, Validator } from '../struct.js';
+import { Struct } from '../struct.js';
+import type {
   Assign,
   ObjectSchema,
   ObjectType,
   PartialObjectSchema,
-} from '../utils.js'
-import { object, optional, type } from './types.js'
+} from '../utils.js';
+import { object, optional, type } from './types.js';
 
 /**
  * Create a new struct that combines the properties properties from multiple
@@ -16,60 +17,69 @@ import { object, optional, type } from './types.js'
 
 export function assign<A extends ObjectSchema, B extends ObjectSchema>(
   A: Struct<ObjectType<A>, A>,
-  B: Struct<ObjectType<B>, B>
-): Struct<ObjectType<Assign<A, B>>, Assign<A, B>>
-export function assign<
-  A extends ObjectSchema,
-  B extends ObjectSchema,
-  C extends ObjectSchema
->(
-  A: Struct<ObjectType<A>, A>,
   B: Struct<ObjectType<B>, B>,
-  C: Struct<ObjectType<C>, C>
-): Struct<ObjectType<Assign<Assign<A, B>, C>>, Assign<Assign<A, B>, C>>
+): Struct<ObjectType<Assign<A, B>>, Assign<A, B>>;
 export function assign<
   A extends ObjectSchema,
   B extends ObjectSchema,
   C extends ObjectSchema,
-  D extends ObjectSchema
 >(
   A: Struct<ObjectType<A>, A>,
   B: Struct<ObjectType<B>, B>,
   C: Struct<ObjectType<C>, C>,
-  D: Struct<ObjectType<D>, D>
-): Struct<
-  ObjectType<Assign<Assign<Assign<A, B>, C>, D>>,
-  Assign<Assign<Assign<A, B>, C>, D>
->
+): Struct<ObjectType<Assign<Assign<A, B>, C>>, Assign<Assign<A, B>, C>>;
 export function assign<
   A extends ObjectSchema,
   B extends ObjectSchema,
   C extends ObjectSchema,
   D extends ObjectSchema,
-  E extends ObjectSchema
 >(
   A: Struct<ObjectType<A>, A>,
   B: Struct<ObjectType<B>, B>,
   C: Struct<ObjectType<C>, C>,
   D: Struct<ObjectType<D>, D>,
-  E: Struct<ObjectType<E>, E>
+): Struct<
+  ObjectType<Assign<Assign<Assign<A, B>, C>, D>>,
+  Assign<Assign<Assign<A, B>, C>, D>
+>;
+export function assign<
+  A extends ObjectSchema,
+  B extends ObjectSchema,
+  C extends ObjectSchema,
+  D extends ObjectSchema,
+  E extends ObjectSchema,
+>(
+  A: Struct<ObjectType<A>, A>,
+  B: Struct<ObjectType<B>, B>,
+  C: Struct<ObjectType<C>, C>,
+  D: Struct<ObjectType<D>, D>,
+  E: Struct<ObjectType<E>, E>,
 ): Struct<
   ObjectType<Assign<Assign<Assign<Assign<A, B>, C>, D>, E>>,
   Assign<Assign<Assign<Assign<A, B>, C>, D>, E>
->
+>;
+/**
+ *
+ * @param Structs
+ */
 export function assign(...Structs: Struct<any>[]): any {
-  const isType = Structs[0].type === 'type'
-  const schemas = Structs.map((s) => s.schema)
-  const schema = Object.assign({}, ...schemas)
-  return isType ? type(schema) : object(schema)
+  const isType = Structs[0].type === 'type';
+  const schemas = Structs.map((s) => s.schema);
+  const schema = Object.assign({}, ...schemas);
+  return isType ? type(schema) : object(schema);
 }
 
 /**
  * Define a new struct type with a custom validation function.
  */
 
+/**
+ *
+ * @param name
+ * @param validator
+ */
 export function define<T>(name: string, validator: Validator): Struct<T, null> {
-  return new Struct({ type: name, schema: null, validator })
+  return new Struct({ type: name, schema: null, validator });
 }
 
 /**
@@ -77,22 +87,26 @@ export function define<T>(name: string, validator: Validator): Struct<T, null> {
  * be `undefined`. `log` will be called if the value is not `undefined`.
  */
 
+/**
+ *
+ * @param struct
+ * @param log
+ */
 export function deprecated<T>(
   struct: Struct<T>,
-  log: (value: unknown, ctx: Context) => void
+  log: (value: unknown, ctx: Context) => void,
 ): Struct<T> {
   return new Struct({
     ...struct,
     refiner: (value, ctx) => value === undefined || struct.refiner(value, ctx),
     validator(value, ctx) {
       if (value === undefined) {
-        return true
-      } else {
-        log(value, ctx)
-        return struct.validator(value, ctx)
+        return true;
       }
+      log(value, ctx);
+      return struct.validator(value, ctx);
     },
-  })
+  });
 }
 
 /**
@@ -103,29 +117,33 @@ export function deprecated<T>(
  * validation logic that changes based on its input.
  */
 
+/**
+ *
+ * @param fn
+ */
 export function dynamic<T>(
-  fn: (value: unknown, ctx: Context) => Struct<T, any>
+  fn: (value: unknown, ctx: Context) => Struct<T, any>,
 ): Struct<T, null> {
   return new Struct({
     type: 'dynamic',
     schema: null,
     *entries(value, ctx) {
-      const struct = fn(value, ctx)
-      yield* struct.entries(value, ctx)
+      const struct = fn(value, ctx);
+      yield* struct.entries(value, ctx);
     },
     validator(value, ctx) {
-      const struct = fn(value, ctx)
-      return struct.validator(value, ctx)
+      const struct = fn(value, ctx);
+      return struct.validator(value, ctx);
     },
     coercer(value, ctx) {
-      const struct = fn(value, ctx)
-      return struct.coercer(value, ctx)
+      const struct = fn(value, ctx);
+      return struct.coercer(value, ctx);
     },
     refiner(value, ctx) {
-      const struct = fn(value, ctx)
-      return struct.refiner(value, ctx)
+      const struct = fn(value, ctx);
+      return struct.refiner(value, ctx);
     },
-  })
+  });
 }
 
 /**
@@ -137,28 +155,32 @@ export function dynamic<T>(
  * circular definition problem.
  */
 
+/**
+ *
+ * @param fn
+ */
 export function lazy<T>(fn: () => Struct<T, any>): Struct<T, null> {
-  let struct: Struct<T, any> | undefined
+  let struct: Struct<T, any> | undefined;
   return new Struct({
     type: 'lazy',
     schema: null,
     *entries(value, ctx) {
-      struct ??= fn()
-      yield* struct.entries(value, ctx)
+      struct ??= fn();
+      yield* struct.entries(value, ctx);
     },
     validator(value, ctx) {
-      struct ??= fn()
-      return struct.validator(value, ctx)
+      struct ??= fn();
+      return struct.validator(value, ctx);
     },
     coercer(value, ctx) {
-      struct ??= fn()
-      return struct.coercer(value, ctx)
+      struct ??= fn();
+      return struct.coercer(value, ctx);
     },
     refiner(value, ctx) {
-      struct ??= fn()
-      return struct.refiner(value, ctx)
+      struct ??= fn();
+      return struct.refiner(value, ctx);
     },
-  })
+  });
 }
 
 /**
@@ -168,22 +190,27 @@ export function lazy<T>(fn: () => Struct<T, any>): Struct<T, null> {
  * Like TypeScript's `Omit` utility.
  */
 
+/**
+ *
+ * @param struct
+ * @param keys
+ */
 export function omit<S extends ObjectSchema, K extends keyof S>(
   struct: Struct<ObjectType<S>, S>,
-  keys: K[]
+  keys: K[],
 ): Struct<ObjectType<Omit<S, K>>, Omit<S, K>> {
-  const { schema } = struct
-  const subschema: any = { ...schema }
+  const { schema } = struct;
+  const subschema: any = { ...schema };
 
   for (const key of keys) {
-    delete subschema[key]
+    delete subschema[key];
   }
 
   switch (struct.type) {
     case 'type':
-      return type(subschema as Omit<S, K>)
+      return type(subschema as Omit<S, K>);
     default:
-      return object(subschema as Omit<S, K>)
+      return object(subschema as Omit<S, K>);
   }
 }
 
@@ -194,21 +221,25 @@ export function omit<S extends ObjectSchema, K extends keyof S>(
  * Like TypeScript's `Partial` utility.
  */
 
+/**
+ *
+ * @param struct
+ */
 export function partial<S extends ObjectSchema>(
-  struct: Struct<ObjectType<S>, S> | S
+  struct: Struct<ObjectType<S>, S> | S,
 ): Struct<ObjectType<PartialObjectSchema<S>>, PartialObjectSchema<S>> {
-  const isStruct = struct instanceof Struct
-  const schema: any = isStruct ? { ...struct.schema } : { ...struct }
+  const isStruct = struct instanceof Struct;
+  const schema: any = isStruct ? { ...struct.schema } : { ...struct };
 
   for (const key in schema) {
-    schema[key] = optional(schema[key])
+    schema[key] = optional(schema[key]);
   }
 
   if (isStruct && struct.type === 'type') {
-    return type(schema) as any
+    return type(schema) as any;
   }
 
-  return object(schema) as any
+  return object(schema) as any;
 }
 
 /**
@@ -218,23 +249,28 @@ export function partial<S extends ObjectSchema>(
  * Like TypeScript's `Pick` utility.
  */
 
+/**
+ *
+ * @param struct
+ * @param keys
+ */
 export function pick<S extends ObjectSchema, K extends keyof S>(
   struct: Struct<ObjectType<S>, S>,
-  keys: K[]
+  keys: K[],
 ): Struct<ObjectType<Pick<S, K>>, Pick<S, K>> {
-  const { schema } = struct
-  const subschema: any = {}
+  const { schema } = struct;
+  const subschema: any = {};
 
   for (const key of keys) {
-    subschema[key] = schema[key]
+    subschema[key] = schema[key];
   }
 
   switch (struct.type) {
     case 'type':
-      return type(subschema) as any
+      return type(subschema) as any;
 
     default:
-      return object(subschema) as any
+      return object(subschema) as any;
   }
 }
 
@@ -244,10 +280,15 @@ export function pick<S extends ObjectSchema, K extends keyof S>(
  * @deprecated This function has been renamed to `define`.
  */
 
+/**
+ *
+ * @param name
+ * @param validator
+ */
 export function struct<T>(name: string, validator: Validator): Struct<T, null> {
   console.warn(
-    'superstruct@0.11 - The `struct` helper has been renamed to `define`.'
-  )
+    'superstruct@0.11 - The `struct` helper has been renamed to `define`.',
+  );
 
-  return define(name, validator)
+  return define(name, validator);
 }

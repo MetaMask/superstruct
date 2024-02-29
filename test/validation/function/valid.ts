@@ -1,7 +1,7 @@
-import { func } from '../../../src'
+import { func } from '../../../src';
 
-export const Struct = func()
+export const Struct = func();
 
-export const data = function () {}
+export const data = function () {};
 
-export const output = data
+export const output = data;

@@ -1,7 +1,7 @@
-import { assert, instance } from '../../src'
-import { test } from '../index.test'
+import { assert, instance } from '../../src';
+import { test } from '../index.test';
 
 test<Date>((x) => {
-  assert(x, instance(Date))
-  return x
-})
+  assert(x, instance(Date));
+  return x;
+});

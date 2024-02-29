@@ -1,7 +1,7 @@
-import { assert, func } from '../../src'
-import { test } from '../index.test'
+import { assert, func } from '../../src';
+import { test } from '../index.test';
 
 test<Function>((x) => {
-  assert(x, func())
-  return x
-})
+  assert(x, func());
+  return x;
+});
