@@ -1,10 +1,10 @@
 import { assert, dynamic, string } from '../../src';
 import { test } from '../index.test';
 
-test<string>((x) => {
+test<string>((value) => {
   assert(
-    x,
+    value,
     dynamic(() => string()),
   );
-  return x;
+  return value;
 });

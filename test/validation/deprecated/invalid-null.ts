@@ -1,6 +1,8 @@
 import { deprecated, string } from '../../../src';
 
-export const Struct = deprecated(string(), () => {});
+export const Struct = deprecated(string(), () => {
+  /* noop */
+});
 
 export const data = null;
 

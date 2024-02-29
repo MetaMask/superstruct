@@ -1,6 +1,6 @@
 import { string, pattern } from '../../../src';
 
-export const Struct = pattern(string(), /\d+/);
+export const Struct = pattern(string(), /\d+/u);
 
 export const data = '123';
 

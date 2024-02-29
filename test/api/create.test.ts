@@ -13,41 +13,41 @@ import {
 
 describe('create', () => {
   it('missing as helper', () => {
-    const S = defaulted(string(), 'default');
-    strictEqual(create(undefined, S), 'default');
+    const struct = defaulted(string(), 'default');
+    strictEqual(create(undefined, struct), 'default');
   });
 
   it('missing as method', () => {
-    const S = defaulted(string(), 'default');
-    strictEqual(S.create(undefined), 'default');
+    const struct = defaulted(string(), 'default');
+    strictEqual(struct.create(undefined), 'default');
   });
 
   it('not missing as helper', () => {
-    const S = defaulted(string(), 'default');
-    strictEqual(create('string', S), 'string');
+    const struct = defaulted(string(), 'default');
+    strictEqual(create('string', struct), 'string');
   });
 
   it('not missing as method', () => {
-    const S = defaulted(string(), 'default');
-    strictEqual(S.create('string'), 'string');
+    const struct = defaulted(string(), 'default');
+    strictEqual(struct.create('string'), 'string');
   });
 
   it('missing optional fields remain missing', () => {
-    const S = type({
+    const struct = type({
       a: string(),
       b: optional(string()),
       c: optional(type({ d: string() })),
     });
-    deepEqual(S.create({ a: 'a' }), { a: 'a' });
+    deepEqual(struct.create({ a: 'a' }), { a: 'a' });
   });
 
   it('explicit undefined values are kept', () => {
-    const S = type({
+    const struct = type({
       a: string(),
       b: coerce(optional(string()), literal(null), () => undefined),
       c: optional(type({ d: string() })),
     });
-    deepStrictEqual(S.create({ a: 'a', b: null, c: undefined }), {
+    deepStrictEqual(struct.create({ a: 'a', b: null, c: undefined }), {
       a: 'a',
       b: undefined,
       c: undefined,

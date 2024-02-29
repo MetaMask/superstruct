@@ -1,9 +1,12 @@
 import { assert, intersection, object, string } from '../../src';
 import { test } from '../index.test';
 
-test<{ a: string; b: string }>((x) => {
-  assert(x, intersection([object({ a: string() }), object({ b: string() })]));
-  return x;
+test<{ a: string; b: string }>((value) => {
+  assert(
+    value,
+    intersection([object({ a: string() }), object({ b: string() })]),
+  );
+  return value;
 });
 
 // Maximum call stack of 39 items
@@ -47,9 +50,9 @@ test<{
   a37: string;
   a38: string;
   a39: string;
-}>((x) => {
+}>((value) => {
   assert(
-    x,
+    value,
     intersection([
       object({ a1: string() }),
       object({ a2: string() }),
@@ -92,5 +95,5 @@ test<{
       object({ a39: string() }),
     ]),
   );
-  return x;
+  return value;
 });

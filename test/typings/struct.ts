@@ -1,10 +1,10 @@
 import { assert, define } from '../../src';
 import { test } from '../index.test';
 
-test<string>((x) => {
+test<string>((value) => {
   assert(
-    x,
+    value,
     define<string>('custom', () => true),
   );
-  return x;
+  return value;
 });

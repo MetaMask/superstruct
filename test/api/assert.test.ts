@@ -12,7 +12,7 @@ describe('assert', () => {
 
   it('valid as method', () => {
     doesNotThrow(() => {
-      // @ts-ignore
+      // @ts-expect-error - Testing invalid input.
       string().assert('valid');
     });
   });
@@ -25,7 +25,7 @@ describe('assert', () => {
 
   it('invalid as method', () => {
     throws(() => {
-      // @ts-ignore
+      // @ts-expect-error - Testing invalid input.
       string().assert(42);
     }, StructError);
   });

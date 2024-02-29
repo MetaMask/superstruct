@@ -1,12 +1,13 @@
 import { object, string, pattern, refine } from '../../../src';
 
-const Section = pattern(string(), /^\d+(\.\d+)*$/);
+const Section = pattern(string(), /^\d+(\.\d+)*$/u);
 
 export const Struct = object({
   section: Section,
   subsection: refine(Section, 'Subsection', (value, ctx) => {
     const { branch } = ctx;
     const parent = branch[0];
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     return value.startsWith(`${parent.section}.`);
   }),
 });

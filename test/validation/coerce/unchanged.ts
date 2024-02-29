@@ -1,7 +1,7 @@
 import { string, unknown, coerce } from '../../../src';
 
-export const Struct = coerce(string(), unknown(), (x) =>
-  x == null ? 'unknown' : x,
+export const Struct = coerce(string(), unknown(), (value) =>
+  value === null || value === undefined ? 'unknown' : value,
 );
 
 export const data = 'known';

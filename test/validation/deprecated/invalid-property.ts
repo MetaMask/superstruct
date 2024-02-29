@@ -1,7 +1,9 @@
 import { deprecated, number, object } from '../../../src';
 
 export const Struct = object({
-  deprecatedKey: deprecated(number(), () => {}),
+  deprecatedKey: deprecated(number(), () => {
+    /* noop */
+  }),
 });
 
 export const data = {

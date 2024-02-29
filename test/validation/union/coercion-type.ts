@@ -1,9 +1,9 @@
 import { union, string, number, defaulted, type } from '../../../src';
 
-const A = string();
-const B = type({ a: number(), b: defaulted(number(), 5) });
+const First = string();
+const Second = type({ a: number(), b: defaulted(number(), 5) });
 
-export const Struct = union([A, B]);
+export const Struct = union([First, Second]);
 
 export const data = { a: 5 };
 

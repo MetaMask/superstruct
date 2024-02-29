@@ -12,10 +12,8 @@ import { define } from './utilities.js';
 
 /**
  * Ensure that any value passes validation.
- */
-
-/**
  *
+ * @returns A struct that will always pass validation.
  */
 export function any(): Struct<any, null> {
   return define('any', () => true);
@@ -27,22 +25,43 @@ export function any(): Struct<any, null> {
  * Note: If you omit the element struct, the arrays elements will not be
  * iterated at all. This can be helpful for cases where performance is critical,
  * and it is preferred to using `array(any())`.
- */
-
-export function array<T extends Struct<any>>(Element: T): Struct<Infer<T>[], T>;
-export function array(): Struct<unknown[], undefined>;
-/**
  *
- * @param Element
+ * @param Element - The struct to validate each element in the array against.
+ * @returns A new struct that will only accept arrays of the given type.
  */
-export function array<T extends Struct<any>>(Element?: T): any {
+export function array<Type extends Struct<any>>(
+  Element: Type,
+): Struct<Infer<Type>[], Type>;
+
+/**
+ * Ensure that a value is an array and that its elements are of a specific type.
+ *
+ * Note: If you omit the element struct, the arrays elements will not be
+ * iterated at all. This can be helpful for cases where performance is critical,
+ * and it is preferred to using `array(any())`.
+ *
+ * @returns A new struct that will accept any array.
+ */
+export function array(): Struct<unknown[], undefined>;
+
+/**
+ * Ensure that a value is an array and that its elements are of a specific type.
+ *
+ * Note: If you omit the element struct, the arrays elements will not be
+ * iterated at all. This can be helpful for cases where performance is critical,
+ * and it is preferred to using `array(any())`.
+ *
+ * @param Element - The struct to validate each element in the array against.
+ * @returns A new struct that will only accept arrays of the given type.
+ */
+export function array<Type extends Struct<any>>(Element?: Type): any {
   return new Struct({
     type: 'array',
     schema: Element,
     *entries(value) {
       if (Element && Array.isArray(value)) {
-        for (const [i, v] of value.entries()) {
-          yield [i, v, Element];
+        for (const [index, arrayValue] of value.entries()) {
+          yield [index, arrayValue, Element];
         }
       }
     },
@@ -60,10 +79,8 @@ export function array<T extends Struct<any>>(Element?: T): any {
 
 /**
  * Ensure that a value is a bigint.
- */
-
-/**
  *
+ * @returns A new struct that will only accept bigints.
  */
 export function bigint(): Struct<bigint, null> {
   return define('bigint', (value) => {
@@ -73,10 +90,8 @@ export function bigint(): Struct<bigint, null> {
 
 /**
  * Ensure that a value is a boolean.
- */
-
-/**
  *
+ * @returns A new struct that will only accept booleans.
  */
 export function boolean(): Struct<boolean, null> {
   return define('boolean', (value) => {
@@ -89,10 +104,8 @@ export function boolean(): Struct<boolean, null> {
  *
  * Note: this also ensures that the value is *not* an invalid `Date` object,
  * which can occur when parsing a date fails but still returns a `Date`.
- */
-
-/**
  *
+ * @returns A new struct that will only accept valid `Date` objects.
  */
 export function date(): Struct<Date, null> {
   return define('date', (value) => {
@@ -108,23 +121,42 @@ export function date(): Struct<Date, null> {
  *
  * Note: after creating the struct, you can access the definition of the
  * potential values as `struct.schema`.
- */
-
-export function enums<U extends number, T extends readonly U[]>(
-  values: T,
-): Struct<T[number], { [K in T[number]]: K }>;
-export function enums<U extends string, T extends readonly U[]>(
-  values: T,
-): Struct<T[number], { [K in T[number]]: K }>;
-/**
  *
- * @param values
+ * @param values - The potential values that the input can be.
+ * @returns A new struct that will only accept the given values.
  */
-export function enums<U extends string | number, T extends readonly U[]>(
-  values: T,
-): any {
+export function enums<Type extends number, Values extends readonly Type[]>(
+  values: Values,
+): Struct<Values[number], { [Key in Values[number]]: Key }>;
+
+/**
+ * Ensure that a value is one of a set of potential values.
+ *
+ * Note: after creating the struct, you can access the definition of the
+ * potential values as `struct.schema`.
+ *
+ * @param values - The potential values that the input can be.
+ * @returns A new struct that will only accept the given values.
+ */
+export function enums<Type extends string, Values extends readonly Type[]>(
+  values: Values,
+): Struct<Values[number], { [Key in Values[number]]: Key }>;
+
+/**
+ * Ensure that a value is one of a set of potential values.
+ *
+ * Note: after creating the struct, you can access the definition of the
+ * potential values as `struct.schema`.
+ *
+ * @param values - The potential values that the input can be.
+ * @returns A new struct that will only accept the given values.
+ */
+export function enums<
+  Type extends string | number,
+  Values extends readonly Type[],
+>(values: Values): any {
   const schema: any = {};
-  const description = values.map((v) => print(v)).join();
+  const description = values.map((value) => print(value)).join();
 
   for (const key of values) {
     schema[key] = key;
@@ -144,11 +176,10 @@ export function enums<U extends string | number, T extends readonly U[]>(
 
 /**
  * Ensure that a value is a function.
- */
-
-/**
  *
+ * @returns A new struct that will only accept functions.
  */
+// eslint-disable-next-line @typescript-eslint/ban-types
 export function func(): Struct<Function, null> {
   return define('func', (value) => {
     return (
@@ -160,15 +191,13 @@ export function func(): Struct<Function, null> {
 
 /**
  * Ensure that a value is an instance of a specific class.
- */
-
-/**
  *
- * @param Class
+ * @param Class - The class that the value must be an instance of.
+ * @returns A new struct that will only accept instances of the given class.
  */
-export function instance<T extends new (...args: any) => any>(
-  Class: T,
-): Struct<InstanceType<T>, null> {
+export function instance<Type extends new (...args: any) => any>(
+  Class: Type,
+): Struct<InstanceType<Type>, null> {
   return define('instance', (value) => {
     return (
       value instanceof Class ||
@@ -179,10 +208,8 @@ export function instance<T extends new (...args: any) => any>(
 
 /**
  * Ensure that a value is an integer.
- */
-
-/**
  *
+ * @returns A new struct that will only accept integers.
  */
 export function integer(): Struct<number, null> {
   return define('integer', (value) => {
@@ -195,31 +222,33 @@ export function integer(): Struct<number, null> {
 
 /**
  * Ensure that a value matches all of a set of types.
- */
-
-/**
  *
- * @param Structs
+ * @param Structs - The set of structs that the value must match.
+ * @returns A new struct that will only accept values that match all of the
+ * given structs.
  */
-export function intersection<A extends AnyStruct, B extends AnyStruct[]>(
-  Structs: [A, ...B],
-): Struct<Infer<A> & UnionToIntersection<InferStructTuple<B>[number]>, null> {
+export function intersection<First extends AnyStruct, Rest extends AnyStruct[]>(
+  Structs: [First, ...Rest],
+): Struct<
+  Infer<First> & UnionToIntersection<InferStructTuple<Rest>[number]>,
+  null
+> {
   return new Struct({
     type: 'intersection',
     schema: null,
-    *entries(value, ctx) {
-      for (const S of Structs) {
-        yield* S.entries(value, ctx);
+    *entries(value, context) {
+      for (const { entries } of Structs) {
+        yield* entries(value, context);
       }
     },
-    *validator(value, ctx) {
-      for (const S of Structs) {
-        yield* S.validator(value, ctx);
+    *validator(value, context) {
+      for (const { validator } of Structs) {
+        yield* validator(value, context);
       }
     },
-    *refiner(value, ctx) {
-      for (const S of Structs) {
-        yield* S.refiner(value, ctx);
+    *refiner(value, context) {
+      for (const { refiner } of Structs) {
+        yield* refiner(value, context);
       }
     },
   });
@@ -227,23 +256,60 @@ export function intersection<A extends AnyStruct, B extends AnyStruct[]>(
 
 /**
  * Ensure that a value is an exact value, using `===` for comparison.
- */
-
-export function literal<T extends boolean>(constant: T): Struct<T, T>;
-export function literal<T extends number>(constant: T): Struct<T, T>;
-export function literal<T extends string>(constant: T): Struct<T, T>;
-export function literal<T>(constant: T): Struct<T, null>;
-/**
  *
- * @param constant
+ * @param constant - The exact value that the input must be.
+ * @returns A new struct that will only accept the exact given value.
  */
-export function literal<T>(constant: T): any {
+export function literal<Type extends boolean>(
+  constant: Type,
+): Struct<Type, Type>;
+
+/**
+ * Ensure that a value is an exact value, using `===` for comparison.
+ *
+ * @param constant - The exact value that the input must be.
+ * @returns A new struct that will only accept the exact given value.
+ */
+export function literal<Type extends number>(
+  constant: Type,
+): Struct<Type, Type>;
+
+/**
+ * Ensure that a value is an exact value, using `===` for comparison.
+ *
+ * @param constant - The exact value that the input must be.
+ * @returns A new struct that will only accept the exact given value.
+ */
+export function literal<Type extends string>(
+  constant: Type,
+): Struct<Type, Type>;
+
+/**
+ * Ensure that a value is an exact value, using `===` for comparison.
+ *
+ * @param constant - The exact value that the input must be.
+ * @returns A new struct that will only accept the exact given value.
+ */
+export function literal<Type>(constant: Type): Struct<Type, null>;
+
+/**
+ * Ensure that a value is an exact value, using `===` for comparison.
+ *
+ * @param constant - The exact value that the input must be.
+ * @returns A new struct that will only accept the exact given value.
+ */
+export function literal<Type>(constant: Type): any {
   const description = print(constant);
-  const t = typeof constant;
+  const valueType = typeof constant;
   return new Struct({
     type: 'literal',
     schema:
-      t === 'string' || t === 'number' || t === 'boolean' ? constant : null,
+      valueType === 'string' ||
+      valueType === 'number' ||
+      valueType === 'boolean'
+        ? constant
+        : null,
+
     validator(value) {
       return (
         value === constant ||
@@ -256,27 +322,41 @@ export function literal<T>(constant: T): any {
 /**
  * Ensure that a value is a `Map` object, and that its keys and values are of
  * specific types.
- */
-
-export function map(): Struct<Map<unknown, unknown>, null>;
-export function map<K, V>(
-  Key: Struct<K>,
-  Value: Struct<V>,
-): Struct<Map<K, V>, null>;
-/**
  *
- * @param Key
- * @param Value
+ * @returns A new struct that will only accept `Map` objects.
  */
-export function map<K, V>(Key?: Struct<K>, Value?: Struct<V>): any {
+export function map(): Struct<Map<unknown, unknown>, null>;
+
+/**
+ * Ensure that a value is a `Map` object, and that its keys and values are of
+ * specific types.
+ *
+ * @param Key - The struct to validate each key in the map against.
+ * @param Value - The struct to validate each value in the map against.
+ * @returns A new struct that will only accept `Map` objects.
+ */
+export function map<Key, Value>(
+  Key: Struct<Key>,
+  Value: Struct<Value>,
+): Struct<Map<Key, Value>, null>;
+
+/**
+ * Ensure that a value is a `Map` object, and that its keys and values are of
+ * specific types.
+ *
+ * @param Key - The struct to validate each key in the map against.
+ * @param Value - The struct to validate each value in the map against.
+ * @returns A new struct that will only accept `Map` objects.
+ */
+export function map<Key, Value>(Key?: Struct<Key>, Value?: Struct<Value>): any {
   return new Struct({
     type: 'map',
     schema: null,
     *entries(value) {
       if (Key && Value && value instanceof Map) {
-        for (const [k, v] of value.entries()) {
-          yield [k as string, k, Key];
-          yield [k as string, v, Value];
+        for (const [mapKey, mapValue] of value.entries()) {
+          yield [mapKey as string, mapKey, Key];
+          yield [mapKey as string, mapValue, Value];
         }
       }
     },
@@ -294,10 +374,8 @@ export function map<K, V>(Key?: Struct<K>, Value?: Struct<V>): any {
 
 /**
  * Ensure that no value ever passes validation.
- */
-
-/**
  *
+ * @returns A new struct that will never pass validation.
  */
 export function never(): Struct<never, null> {
   return define('never', () => false);
@@ -305,13 +383,13 @@ export function never(): Struct<never, null> {
 
 /**
  * Augment an existing struct to allow `null` values.
- */
-
-/**
  *
- * @param struct
+ * @param struct - The struct to augment.
+ * @returns A new struct that will accept `null` values.
  */
-export function nullable<T, S>(struct: Struct<T, S>): Struct<T | null, S> {
+export function nullable<Type, Schema>(
+  struct: Struct<Type, Schema>,
+): Struct<Type | null, Schema> {
   return new Struct({
     ...struct,
     validator: (value, ctx) => value === null || struct.validator(value, ctx),
@@ -321,10 +399,8 @@ export function nullable<T, S>(struct: Struct<T, S>): Struct<T | null, S> {
 
 /**
  * Ensure that a value is a number.
- */
-
-/**
  *
+ * @returns A new struct that will only accept numbers.
  */
 export function number(): Struct<number, null> {
   return define('number', (value) => {
@@ -336,33 +412,52 @@ export function number(): Struct<number, null> {
 }
 
 /**
- * Ensure that a value is an object, that is has a known set of properties,
+ * Ensure that a value is an object, that it has a known set of properties,
  * and that its properties are of specific types.
  *
  * Note: Unrecognized properties will fail validation.
- */
-
-export function object(): Struct<Record<string, unknown>, null>;
-export function object<S extends ObjectSchema>(
-  schema: S,
-): Struct<ObjectType<S>, S>;
-/**
  *
- * @param schema
+ * @returns A new struct that will only accept objects.
  */
-export function object<S extends ObjectSchema>(schema?: S): any {
+export function object(): Struct<Record<string, unknown>, null>;
+
+/**
+ * Ensure that a value is an object, that it has a known set of properties,
+ * and that its properties are of specific types.
+ *
+ * Note: Unrecognized properties will fail validation.
+ *
+ * @param schema - An object that defines the structure of the object.
+ * @returns A new struct that will only accept objects.
+ */
+export function object<Schema extends ObjectSchema>(
+  schema: Schema,
+): Struct<ObjectType<Schema>, Schema>;
+
+/**
+ * Ensure that a value is an object, that it has a known set of properties,
+ * and that its properties are of specific types.
+ *
+ * Note: Unrecognized properties will fail validation.
+ *
+ * @param schema - An object that defines the structure of the object.
+ * @returns A new struct that will only accept objects.
+ */
+export function object<Schema extends ObjectSchema>(
+  schema?: Schema | undefined,
+): any {
   const knowns = schema ? Object.keys(schema) : [];
   const Never = never();
   return new Struct({
     type: 'object',
-    schema: schema || null,
+    schema: schema ?? null,
     *entries(value) {
       if (schema && isObject(value)) {
         const unknowns = new Set(Object.keys(value));
 
         for (const key of knowns) {
           unknowns.delete(key);
-          yield [key, value[key], schema[key]];
+          yield [key, value[key], schema[key] as Struct<any>];
         }
 
         for (const key of unknowns) {
@@ -383,13 +478,13 @@ export function object<S extends ObjectSchema>(schema?: S): any {
 
 /**
  * Augment a struct to allow `undefined` values.
- */
-
-/**
  *
- * @param struct
+ * @param struct - The struct to augment.
+ * @returns A new struct that will accept `undefined` values.
  */
-export function optional<T, S>(struct: Struct<T, S>): Struct<T | undefined, S> {
+export function optional<Type, Schema>(
+  struct: Struct<Type, Schema>,
+): Struct<Type | undefined, Schema> {
   return new Struct({
     ...struct,
     validator: (value, ctx) =>
@@ -406,23 +501,27 @@ export function optional<T, S>(struct: Struct<T, S>): Struct<T | undefined, S> {
  */
 
 /**
+ * Ensure that a value is an object with keys and values of specific types, but
+ * without ensuring any specific shape of properties.
  *
- * @param Key
- * @param Value
+ * @param Key - The struct to validate each key in the record against.
+ * @param Value - The struct to validate each value in the record against.
+ * @returns A new struct that will only accept objects.
  */
-export function record<K extends string, V>(
-  Key: Struct<K>,
-  Value: Struct<V>,
-): Struct<Record<K, V>, null> {
+export function record<Key extends string, Value>(
+  Key: Struct<Key>,
+  Value: Struct<Value>,
+): Struct<Record<Key, Value>, null> {
   return new Struct({
     type: 'record',
     schema: null,
     *entries(value) {
       if (isObject(value)) {
-        for (const k in value) {
-          const v = value[k];
-          yield [k, k, Key];
-          yield [k, v, Value];
+        // eslint-disable-next-line guard-for-in
+        for (const objectKey in value) {
+          const objectValue = value[objectKey];
+          yield [objectKey, objectKey, Key];
+          yield [objectKey, objectValue, Value];
         }
       }
     },
@@ -439,10 +538,8 @@ export function record<K extends string, V>(
  *
  * Note: this does not test the value against the regular expression! For that
  * you need to use the `pattern()` refinement.
- */
-
-/**
  *
+ * @returns A new struct that will only accept `RegExp` objects.
  */
 export function regexp(): Struct<RegExp, null> {
   return define('regexp', (value) => {
@@ -453,22 +550,35 @@ export function regexp(): Struct<RegExp, null> {
 /**
  * Ensure that a value is a `Set` object, and that its elements are of a
  * specific type.
- */
-
-export function set(): Struct<Set<unknown>, null>;
-export function set<T>(Element: Struct<T>): Struct<Set<T>, null>;
-/**
  *
- * @param Element
+ * @returns A new struct that will only accept `Set` objects.
  */
-export function set<T>(Element?: Struct<T>): any {
+export function set(): Struct<Set<unknown>, null>;
+
+/**
+ * Ensure that a value is a `Set` object, and that its elements are of a
+ * specific type.
+ *
+ * @param Element - The struct to validate each element in the set against.
+ * @returns A new struct that will only accept `Set` objects.
+ */
+export function set<Type>(Element: Struct<Type>): Struct<Set<Type>, null>;
+
+/**
+ * Ensure that a value is a `Set` object, and that its elements are of a
+ * specific type.
+ *
+ * @param Element - The struct to validate each element in the set against.
+ * @returns A new struct that will only accept `Set` objects.
+ */
+export function set<Type>(Element?: Struct<Type>): any {
   return new Struct({
     type: 'set',
     schema: null,
     *entries(value) {
       if (Element && value instanceof Set) {
-        for (const v of value) {
-          yield [v as string, v, Element];
+        for (const setValue of value) {
+          yield [setValue as string, setValue, Element];
         }
       }
     },
@@ -486,10 +596,8 @@ export function set<T>(Element?: Struct<T>): any {
 
 /**
  * Ensure that a value is a string.
- */
-
-/**
  *
+ * @returns A new struct that will only accept strings.
  */
 export function string(): Struct<string, null> {
   return define('string', (value) => {
@@ -503,15 +611,13 @@ export function string(): Struct<string, null> {
 /**
  * Ensure that a value is a tuple of a specific length, and that each of its
  * elements is of a specific type.
- */
-
-/**
  *
- * @param Structs
+ * @param Structs - The set of structs that the value must match.
+ * @returns A new struct that will only accept tuples of the given types.
  */
-export function tuple<A extends AnyStruct, B extends AnyStruct[]>(
-  Structs: [A, ...B],
-): Struct<[Infer<A>, ...InferStructTuple<B>], null> {
+export function tuple<First extends AnyStruct, Rest extends AnyStruct[]>(
+  Structs: [First, ...Rest],
+): Struct<[Infer<First>, ...InferStructTuple<Rest>], null> {
   const Never = never();
 
   return new Struct({
@@ -540,15 +646,13 @@ export function tuple<A extends AnyStruct, B extends AnyStruct[]>(
  *
  * Note: Unrecognized properties are allowed and untouched. This is similar to
  * how TypeScript's structural typing works.
- */
-
-/**
  *
- * @param schema
+ * @param schema - An object that defines the structure of the object.
+ * @returns A new struct that will only accept objects.
  */
-export function type<S extends ObjectSchema>(
-  schema: S,
-): Struct<ObjectType<S>, S> {
+export function type<Schema extends ObjectSchema>(
+  schema: Schema,
+): Struct<ObjectType<Schema>, Schema> {
   const keys = Object.keys(schema);
   return new Struct({
     type: 'type',
@@ -556,7 +660,7 @@ export function type<S extends ObjectSchema>(
     *entries(value) {
       if (isObject(value)) {
         for (const k of keys) {
-          yield [k, value[k], schema[k]];
+          yield [k, value[k], schema[k] as Struct<any>];
         }
       }
     },
@@ -573,22 +677,21 @@ export function type<S extends ObjectSchema>(
 
 /**
  * Ensure that a value matches one of a set of types.
- */
-
-/**
  *
- * @param Structs
+ * @param Structs - The set of structs that the value must match.
+ * @returns A new struct that will only accept values that match one of the
+ * given structs.
  */
-export function union<A extends AnyStruct, B extends AnyStruct[]>(
-  Structs: [A, ...B],
-): Struct<Infer<A> | InferStructTuple<B>[number], null> {
-  const description = Structs.map((s) => s.type).join(' | ');
+export function union<First extends AnyStruct, Rest extends AnyStruct[]>(
+  Structs: [First, ...Rest],
+): Struct<Infer<First> | InferStructTuple<Rest>[number], null> {
+  const description = Structs.map((struct) => struct.type).join(' | ');
   return new Struct({
     type: 'union',
     schema: null,
     coercer(value) {
-      for (const S of Structs) {
-        const [error, coerced] = S.validate(value, { coerce: true });
+      for (const { validate } of Structs) {
+        const [error, coerced] = validate(value, { coerce: true });
         if (!error) {
           return coerced;
         }
@@ -599,13 +702,14 @@ export function union<A extends AnyStruct, B extends AnyStruct[]>(
     validator(value, ctx) {
       const failures = [];
 
-      for (const S of Structs) {
-        const [...tuples] = run(value, S, ctx);
+      for (const InnerStruct of Structs) {
+        const [...tuples] = run(value, InnerStruct, ctx);
         const [first] = tuples;
 
-        if (!first[0]) {
+        if (!first?.[0]) {
           return [];
         }
+
         for (const [failure] of tuples) {
           if (failure) {
             failures.push(failure);
@@ -625,10 +729,8 @@ export function union<A extends AnyStruct, B extends AnyStruct[]>(
 
 /**
  * Ensure that any value passes validation, without widening its type to `any`.
- */
-
-/**
  *
+ * @returns A struct that will always pass validation.
  */
 export function unknown(): Struct<unknown, null> {
   return define('unknown', () => true);

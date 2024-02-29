@@ -1,10 +1,10 @@
 import { assert, refine, string } from '../../src';
 import { test } from '../index.test';
 
-test<string>((x) => {
+test<string>((value) => {
   assert(
-    x,
+    value,
     refine(string(), 'word', () => true),
   );
-  return x;
+  return value;
 });

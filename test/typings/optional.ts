@@ -1,23 +1,23 @@
 import { assert, optional, string, number, object, enums } from '../../src';
 import { test } from '../index.test';
 
-test<string | undefined>((x) => {
-  assert(x, optional(string()));
-  return x;
+test<string | undefined>((value) => {
+  assert(value, optional(string()));
+  return value;
 });
 
 test<{
   a?: number | undefined;
   b: string;
-}>((x) => {
+}>((value) => {
   assert(
-    x,
+    value,
     object({
       a: optional(number()),
       b: string(),
     }),
   );
-  return x;
+  return value;
 });
 
 test<{

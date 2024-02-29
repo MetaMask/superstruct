@@ -1,7 +1,9 @@
 import { type, number, deprecated, any } from '../../../src';
 
 export const Struct = type({
-  name: deprecated(any(), () => {}),
+  name: deprecated(any(), () => {
+    /* noop */
+  }),
   age: number(),
 });
 

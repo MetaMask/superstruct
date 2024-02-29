@@ -23,6 +23,14 @@ module.exports = {
         '@metamask/eslint-config-jest',
         '@metamask/eslint-config-nodejs',
       ],
+      rules: {
+        '@typescript-eslint/no-shadow': [
+          'error',
+          {
+            allow: ['describe', 'it'],
+          },
+        ],
+      },
     },
   ],
 
@@ -32,5 +40,6 @@ module.exports = {
     'dist/',
     'docs/',
     '.yarn/',
+    'examples/',
   ],
 };

@@ -30,130 +30,131 @@ import {
 } from '../../src';
 import { test } from '../index.test';
 
-test<Describe<any>>((x) => {
+test<Describe<any>>(() => {
   return any();
 });
 
-test<Describe<string[]>>((x) => {
+test<Describe<string[]>>(() => {
   return array(string());
 });
 
-test<Describe<boolean>>((x) => {
+test<Describe<boolean>>(() => {
   return boolean();
 });
 
-test<Describe<Date>>((x) => {
+test<Describe<Date>>(() => {
   return date();
 });
 
-test<Describe<string>>((x) => {
+test<Describe<string>>(() => {
   return empty(string());
 });
 
-test<Describe<'a' | 'b' | 'c'>>((x) => {
+test<Describe<'a' | 'b' | 'c'>>(() => {
   return enums(['a', 'b', 'c']);
 });
 
-test<Describe<1 | 2 | 3>>((x) => {
+test<Describe<1 | 2 | 3>>(() => {
   return enums([1, 2, 3]);
 });
 
-test<Describe<Function>>((x) => {
+// eslint-disable-next-line @typescript-eslint/ban-types
+test<Describe<Function>>(() => {
   return func();
 });
 
-test<Describe<number>>((x) => {
+test<Describe<number>>(() => {
   return integer();
 });
 
-test<Describe<string & number>>((x) => {
+test<Describe<string & number>>(() => {
   return intersection([string(), number()]);
 });
 
-test<Describe<false>>((x) => {
+test<Describe<false>>(() => {
   return literal(false);
 });
 
-test<Describe<42>>((x) => {
+test<Describe<42>>(() => {
   return literal(42);
 });
 
-test<Describe<'test'>>((x) => {
+test<Describe<'test'>>(() => {
   return literal('test');
 });
 
-test<Describe<Map<string, number>>>((x) => {
+test<Describe<Map<string, number>>>(() => {
   return map(string(), number());
 });
 
-test<Describe<number>>((x) => {
+test<Describe<number>>(() => {
   return max(integer(), 0);
 });
 
-test<Describe<number>>((x) => {
+test<Describe<number>>(() => {
   return min(integer(), 0);
 });
 
-test<Describe<never>>((x) => {
+test<Describe<never>>(() => {
   return never();
 });
 
-test<Describe<string | null>>((x) => {
+test<Describe<string | null>>(() => {
   return nullable(string());
 });
 
-test<Describe<number>>((x) => {
+test<Describe<number>>(() => {
   return number();
 });
 
-test<Describe<{ name: string }>>((x) => {
+test<Describe<{ name: string }>>(() => {
   return object({ name: string() });
 });
 
-test<Describe<{ name?: string }>>((x) => {
+test<Describe<{ name?: string | undefined }>>(() => {
   return object({ name: optional(string()) });
 });
 
-test<Describe<string | undefined>>((x) => {
+test<Describe<string | undefined>>(() => {
   return optional(string());
 });
 
-test<Describe<string>>((x) => {
-  return pattern(string(), /\d+/);
+test<Describe<string>>(() => {
+  return pattern(string(), /\d+/u);
 });
 
-test<Describe<Record<string, number>>>((x) => {
+test<Describe<Record<string, number>>>(() => {
   return record(string(), number());
 });
 
-test<Describe<RegExp>>((x) => {
+test<Describe<RegExp>>(() => {
   return regexp();
 });
 
-test<Describe<Set<number>>>((x) => {
+test<Describe<Set<number>>>(() => {
   return set(number());
 });
 
-test<Describe<string>>((x) => {
+test<Describe<string>>(() => {
   return size(string(), 1, 100);
 });
 
-test<Describe<string>>((x) => {
+test<Describe<string>>(() => {
   return string();
 });
 
-test<Describe<[string]>>((x) => {
+test<Describe<[string]>>(() => {
   return tuple([string()]);
 });
 
-test<Describe<[string, number]>>((x) => {
+test<Describe<[string, number]>>(() => {
   return tuple([string(), number()]);
 });
 
-test<Describe<string | number>>((x) => {
+test<Describe<string | number>>(() => {
   return union([string(), number()]);
 });
 
-test<Describe<unknown>>((x) => {
+test<Describe<unknown>>(() => {
   return unknown();
 });
