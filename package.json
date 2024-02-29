@@ -55,7 +55,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "rm -rf ./dist && rollup --config ./rollup.config.js && scripts/split-tsd-files.sh",
+    "build": "rm -rf ./dist && rollup --config ./rollup.config.mjs && scripts/split-tsd-files.sh",
     "clean": "rm -rf ./{dist,node_modules}",
     "lint": "yarn lint:eslint && yarn lint:misc --check && yarn lint:dependencies --check && yarn lint:changelog",
     "lint:changelog": "auto-changelog validate --prettier",
