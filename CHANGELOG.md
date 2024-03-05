@@ -9,15 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.0.0]
 
-### Added
-
-- **BREAKING:** Add an ESM build ([#5](https://github.com/MetaMask/superstruct/pull/5))
-  - It's no longer possible to import files from the `dist` folder directly.
-
 ### Changed
 
 - Prepare package for releasing under `@metamask` organisation ([#1](https://github.com/MetaMask/superstruct/pull/1), [#3](https://github.com/MetaMask/superstruct/pull/3), [#4](https://github.com/MetaMask/superstruct/pull/4), [#5](https://github.com/MetaMask/superstruct/pull/5), [#6](https://github.com/MetaMask/superstruct/pull/6), [#7](https://github.com/MetaMask/superstruct/pull/7), [#8](https://github.com/MetaMask/superstruct/pull/8))
   - The package name is now `@metamask/superstruct`.
+  - The changelog file has been renamed to `CHANGELOG.md`, and the format has changed to fit MetaMask's changelog style.
+
+### Fixed
+
+- **BREAKING:** Expose CommonJS and ESM builds via package manifest `exports` ([#5](https://github.com/MetaMask/superstruct/pull/5))
+  - It's no longer possible to import files from the `dist` folder directly.
 
 ## [1.0.0]
 
