@@ -33,7 +33,7 @@
     "validation",
     "validator"
   ],
-  "repository": "git://github.com/MetaMask/superstruct.git",
+  "repository": "https://github.com/MetaMask/superstruct.git",
   "license": "MIT",
   "sideEffects": false,
   "exports": {
