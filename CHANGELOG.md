@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0]
+
+### Uncategorized
+
+- Update publish config ([#15](https://github.com/MetaMask/superstruct/pull/15))
+- Revert "2.0.0 (#13)" ([#13](https://github.com/MetaMask/superstruct/pull/13))
+- 2.0.0 ([#13](https://github.com/MetaMask/superstruct/pull/13))
+- Update metadata in package.json ([#12](https://github.com/MetaMask/superstruct/pull/12))
+- Revert "2.0.0 (#9)" ([#9](https://github.com/MetaMask/superstruct/pull/9))
+- Update security code scanner file ([#10](https://github.com/MetaMask/superstruct/pull/10))
+- 2.0.0 ([#9](https://github.com/MetaMask/superstruct/pull/9))
+- Format changelog ([#8](https://github.com/MetaMask/superstruct/pull/8))
+- Fix tests ([#7](https://github.com/MetaMask/superstruct/pull/7))
+- Update CI and related files to match module template ([#6](https://github.com/MetaMask/superstruct/pull/6))
+- Build package with `tsup` ([#5](https://github.com/MetaMask/superstruct/pull/5))
+- Update lint configs ([#4](https://github.com/MetaMask/superstruct/pull/4))
+- Add Yarn and lockfile ([#3](https://github.com/MetaMask/superstruct/pull/3))
+- Enabling MetaMask security code scanner ([#2](https://github.com/MetaMask/superstruct/pull/2))
+- Fix ESM/CJS compatibility ([#1](https://github.com/MetaMask/superstruct/pull/1))
+- Add notice to README
+- Change package name to @metamask/superstruct
+- make more of the examples runnable ([#1165](https://github.com/MetaMask/superstruct/pull/1165))
+- Retain struct's type in partial and pick helpers ([#1149](https://github.com/MetaMask/superstruct/pull/1149))
+- Document the usage of the type struct in the omit utility ([#1150](https://github.com/MetaMask/superstruct/pull/1150))
+- Fix documentation error ([#1197](https://github.com/MetaMask/superstruct/pull/1197))
+- update demo link and screenshot
+
 ## [1.0.0]
 
 ### Added
@@ -600,7 +627,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release.
 
-[Unreleased]: https://github.com/MetaMask/superstruct/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/MetaMask/superstruct/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/MetaMask/superstruct/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/MetaMask/superstruct/compare/v0.16.0...v1.0.0
 [0.16.0]: https://github.com/MetaMask/superstruct/compare/v0.15.0...v0.16.0
 [0.15.0]: https://github.com/MetaMask/superstruct/compare/v0.14.0...v0.15.0
