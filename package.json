@@ -45,20 +45,35 @@
   "sideEffects": false,
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js",
-      "types": "./dist/types/index.d.ts"
+      "import": {
+        "types": "./dist/types/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/types/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./node": {
+      "import": {
+        "types": "./dist/types/node.d.mts",
+        "default": "./dist/node.mjs"
+      },
+      "require": {
+        "types": "./dist/types/node.d.cts",
+        "default": "./dist/node.cjs"
+      }
     },
     "./package.json": "./package.json"
   },
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
-  "types": "./dist/types/index.d.ts",
+  "types": "./dist/types/index.d.cts",
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsup --clean && yarn build:types",
+    "build": "ts-bridge --project tsconfig.json --clean && yarn build:types",
     "build:docs": "typedoc",
     "build:types": "tsc --project tsconfig.build.json",
     "lint": "yarn lint:eslint && yarn lint:misc --check && yarn lint:dependencies --check && yarn lint:changelog",
@@ -78,6 +93,8 @@
     "@metamask/eslint-config-jest": "^12.1.0",
     "@metamask/eslint-config-nodejs": "^12.1.0",
     "@metamask/eslint-config-typescript": "^12.1.0",
+    "@ts-bridge/cli": "^0.1.2",
+    "@ts-bridge/shims": "^0.1.1",
     "@types/expect": "^24.3.0",
     "@types/lodash": "^4.14.144",
     "@types/lodash-es": "^4.17.12",
@@ -100,7 +117,6 @@
     "lodash-es": "^4.17.21",
     "prettier": "^2.7.1",
     "prettier-plugin-packagejson": "^2.3.0",
-    "tsup": "patch:tsup@npm%3A8.0.2#~/.yarn/patches/tsup-npm-8.0.2-86e40f68a7.patch",
     "typedoc": "^0.25.9",
     "typescript": "~4.8.4",
     "vitest": "^1.2.2"
@@ -115,8 +131,7 @@
   },
   "lavamoat": {
     "allowScripts": {
-      "vitest>vite>esbuild": true,
-      "tsup>esbuild": true
+      "vitest>vite>esbuild": true
     }
   }
 }
