@@ -63,9 +63,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "ts-bridge --project tsconfig.json --clean && yarn build:types",
+    "build": "ts-bridge --project tsconfig.build.json --clean",
     "build:docs": "typedoc",
-    "build:types": "tsc --project tsconfig.build.json",
     "lint": "yarn lint:eslint && yarn lint:misc --check && yarn lint:dependencies --check && yarn lint:changelog",
     "lint:changelog": "auto-changelog validate --prettier",
     "lint:dependencies": "depcheck && yarn dedupe",
