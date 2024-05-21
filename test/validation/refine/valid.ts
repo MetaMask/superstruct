@@ -1,6 +1,6 @@
 import isEmail from 'is-email';
 
-import { string, refine } from '../../../src';
+import { string, refine } from '../../../src/index.js';
 
 export const Struct = refine(string(), 'email', isEmail);
 

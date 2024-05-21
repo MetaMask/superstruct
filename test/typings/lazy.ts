@@ -1,5 +1,5 @@
-import { assert, lazy, string } from '../../src';
-import { test } from '../index.test';
+import { assert, lazy, string } from '../../src/index.js';
+import { test } from '../index.test.js';
 
 test<string>((value) => {
   assert(

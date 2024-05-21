@@ -1,5 +1,5 @@
-import { assert, never } from '../../src';
-import { test } from '../index.test';
+import { assert, never } from '../../src/index.js';
+import { test } from '../index.test.js';
 
 test<never>((value) => {
   assert(value, never());

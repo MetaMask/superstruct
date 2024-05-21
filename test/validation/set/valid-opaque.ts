@@ -1,4 +1,4 @@
-import { set } from '../../../src';
+import { set } from '../../../src/index.js';
 
 export const Struct = set();
 

@@ -1,4 +1,4 @@
-import { number, set, empty } from '../../../src';
+import { number, set, empty } from '../../../src/index.js';
 
 export const Struct = empty(set(number()));
 

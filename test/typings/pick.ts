@@ -1,5 +1,5 @@
-import { assert, pick, object, number, string } from '../../src';
-import { test } from '../index.test';
+import { assert, pick, object, number, string } from '../../src/index.js';
+import { test } from '../index.test.js';
 
 test<{
   b: string;

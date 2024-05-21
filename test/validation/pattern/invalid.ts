@@ -1,4 +1,4 @@
-import { string, pattern } from '../../../src';
+import { string, pattern } from '../../../src/index.js';
 
 export const Struct = pattern(string(), /\d+/u);
 

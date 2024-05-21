@@ -1,5 +1,5 @@
-import { assert, number, min } from '../../src';
-import { test } from '../index.test';
+import { assert, number, min } from '../../src/index.js';
+import { test } from '../index.test.js';
 
 test<number>((value) => {
   assert(value, min(number(), 0));

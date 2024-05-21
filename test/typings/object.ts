@@ -1,5 +1,5 @@
-import { assert, object, number, string } from '../../src';
-import { test } from '../index.test';
+import { assert, object, number, string } from '../../src/index.js';
+import { test } from '../index.test.js';
 
 test<Record<string, unknown>>((value) => {
   assert(value, object());

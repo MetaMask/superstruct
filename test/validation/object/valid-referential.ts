@@ -1,4 +1,4 @@
-import { object, string, pattern, refine } from '../../../src';
+import { object, string, pattern, refine } from '../../../src/index.js';
 
 const Section = pattern(string(), /^\d+(\.\d+)*$/u);
 

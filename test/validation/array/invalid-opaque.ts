@@ -1,4 +1,4 @@
-import { array } from '../../../src';
+import { array } from '../../../src/index.js';
 
 export const Struct = array();
 

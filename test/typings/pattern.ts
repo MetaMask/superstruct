@@ -1,5 +1,5 @@
-import { assert, pattern, string } from '../../src';
-import { test } from '../index.test';
+import { assert, pattern, string } from '../../src/index.js';
+import { test } from '../index.test.js';
 
 test<string>((value) => {
   assert(value, pattern(string(), /.*/u));

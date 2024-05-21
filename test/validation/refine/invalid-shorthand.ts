@@ -1,4 +1,4 @@
-import { number, refine } from '../../../src';
+import { number, refine } from '../../../src/index.js';
 
 export const Struct = refine(
   number(),

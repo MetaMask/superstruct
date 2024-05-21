@@ -1,4 +1,4 @@
-import { map, empty, number, string } from '../../../src';
+import { map, empty, number, string } from '../../../src/index.js';
 
 export const Struct = empty(map(number(), string()));
 

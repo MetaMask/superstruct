@@ -1,4 +1,4 @@
-import { string, refine, object } from '../../../src';
+import { string, refine, object } from '../../../src/index.js';
 
 const PasswordValidator = refine(string(), 'MinimumLength', (pw) =>
   pw.length >= 8 ? true : 'required minimum length of 8',

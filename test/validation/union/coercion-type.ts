@@ -1,4 +1,4 @@
-import { union, string, number, defaulted, type } from '../../../src';
+import { union, string, number, defaulted, type } from '../../../src/index.js';
 
 const First = string();
 const Second = type({ a: number(), b: defaulted(number(), 5) });

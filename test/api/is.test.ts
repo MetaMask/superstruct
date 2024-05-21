@@ -1,7 +1,7 @@
 import { strictEqual } from 'assert';
 import { describe, it } from 'vitest';
 
-import { is, string } from '../../src';
+import { is, string } from '../../src/index.js';
 
 describe('is', () => {
   it('valid as helper', () => {

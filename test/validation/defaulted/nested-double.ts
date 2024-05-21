@@ -1,4 +1,4 @@
-import { defaulted, string, object } from '../../../src';
+import { defaulted, string, object } from '../../../src/index.js';
 
 export const Struct = object({
   book: defaulted(

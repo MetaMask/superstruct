@@ -1,5 +1,13 @@
-import { assert, size, string, array, number, map, set } from '../../src';
-import { test } from '../index.test';
+import {
+  assert,
+  size,
+  string,
+  array,
+  number,
+  map,
+  set,
+} from '../../src/index.js';
+import { test } from '../index.test.js';
 
 test<number>((value) => {
   assert(value, size(number(), 1, 5));

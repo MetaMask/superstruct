@@ -1,5 +1,12 @@
-import { assert, optional, string, number, object, enums } from '../../src';
-import { test } from '../index.test';
+import {
+  assert,
+  optional,
+  string,
+  number,
+  object,
+  enums,
+} from '../../src/index.js';
+import { test } from '../index.test.js';
 
 test<string | undefined>((value) => {
   assert(value, optional(string()));

@@ -1,4 +1,4 @@
-import { partial, object, string, number } from '../../../src';
+import { partial, object, string, number } from '../../../src/index.js';
 
 export const Struct = partial(
   object({

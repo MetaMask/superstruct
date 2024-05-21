@@ -1,4 +1,4 @@
-import { type, intersection, string, number } from '../../../src';
+import { type, intersection, string, number } from '../../../src/index.js';
 
 const First = type({ a: string() });
 const Second = type({ b: number() });

@@ -9,7 +9,7 @@ import {
   refine,
   object,
   any,
-} from '../../src';
+} from '../../src/index.js';
 
 describe('validate', () => {
   it('valid as helper', () => {

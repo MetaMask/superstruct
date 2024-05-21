@@ -9,7 +9,7 @@ import {
   StructError,
   array,
   type,
-} from '../../src';
+} from '../../src/index.js';
 
 describe('mask', () => {
   it('object as helper', () => {

@@ -1,7 +1,7 @@
 import { throws, doesNotThrow } from 'assert';
 import { describe, it } from 'vitest';
 
-import { assert, string, StructError } from '../../src';
+import { assert, string, StructError } from '../../src/index.js';
 
 describe('assert', () => {
   it('valid as helper', () => {

@@ -1,4 +1,4 @@
-import { integer } from '../../../src';
+import { integer } from '../../../src/index.js';
 
 export const Struct = integer();
 

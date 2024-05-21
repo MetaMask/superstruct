@@ -1,4 +1,4 @@
-import { deprecated, string } from '../../../src';
+import { deprecated, string } from '../../../src/index.js';
 
 export const Struct = deprecated(string(), () => {
   /* noop */

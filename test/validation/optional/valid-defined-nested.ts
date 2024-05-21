@@ -1,4 +1,4 @@
-import { type, string, number, optional } from '../../../src';
+import { type, string, number, optional } from '../../../src/index.js';
 
 export const Struct = type({
   name: optional(string()),

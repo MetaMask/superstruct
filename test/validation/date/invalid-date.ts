@@ -1,4 +1,4 @@
-import { date } from '../../../src';
+import { date } from '../../../src/index.js';
 
 export const Struct = date();
 

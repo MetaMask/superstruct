@@ -1,4 +1,4 @@
-import { type, assign, string, number } from '../../../src';
+import { type, assign, string, number } from '../../../src/index.js';
 
 const First = type({ a: string() });
 const Second = type({ a: number(), b: number() });

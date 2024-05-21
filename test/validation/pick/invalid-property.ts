@@ -1,4 +1,4 @@
-import { pick, object, string, number } from '../../../src';
+import { pick, object, string, number } from '../../../src/index.js';
 
 export const Struct = pick(
   object({

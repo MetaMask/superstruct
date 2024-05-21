@@ -1,4 +1,4 @@
-import { literal } from '../../../src';
+import { literal } from '../../../src/index.js';
 
 export const Struct = literal(42);
 

@@ -1,5 +1,5 @@
-import { assert, number, max } from '../../src';
-import { test } from '../index.test';
+import { assert, number, max } from '../../src/index.js';
+import { test } from '../index.test.js';
 
 test<number>((value) => {
   assert(value, max(number(), 0));

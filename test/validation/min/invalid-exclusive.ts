@@ -1,4 +1,4 @@
-import { number, min } from '../../../src';
+import { number, min } from '../../../src/index.js';
 
 export const Struct = min(number(), 0, { exclusive: true });
 

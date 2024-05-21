@@ -1,5 +1,5 @@
-import { assert, tuple, string, number, literal } from '../../src';
-import { test } from '../index.test';
+import { assert, tuple, string, number, literal } from '../../src/index.js';
+import { test } from '../index.test.js';
 
 test<[string, number]>((value) => {
   assert(value, tuple([string(), number()]));

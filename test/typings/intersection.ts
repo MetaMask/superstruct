@@ -1,5 +1,5 @@
-import { assert, intersection, object, string } from '../../src';
-import { test } from '../index.test';
+import { assert, intersection, object, string } from '../../src/index.js';
+import { test } from '../index.test.js';
 
 test<{ a: string; b: string }>((value) => {
   assert(

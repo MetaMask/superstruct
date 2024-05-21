@@ -1,5 +1,5 @@
-import { assert, omit, object, number, string, type } from '../../src';
-import { test } from '../index.test';
+import { assert, omit, object, number, string, type } from '../../src/index.js';
+import { test } from '../index.test.js';
 
 test<{
   b: string;

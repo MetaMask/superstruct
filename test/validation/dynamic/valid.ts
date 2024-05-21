@@ -1,4 +1,4 @@
-import { dynamic, string } from '../../../src';
+import { dynamic, string } from '../../../src/index.js';
 
 export const Struct = dynamic(() => string());
 

@@ -1,4 +1,4 @@
-import { string, trimmed } from '../../../src';
+import { string, trimmed } from '../../../src/index.js';
 
 export const Struct = trimmed(string());
 

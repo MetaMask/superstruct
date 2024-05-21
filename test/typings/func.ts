@@ -1,5 +1,5 @@
-import { assert, func } from '../../src';
-import { test } from '../index.test';
+import { assert, func } from '../../src/index.js';
+import { test } from '../index.test.js';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 test<Function>((value) => {

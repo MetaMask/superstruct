@@ -1,5 +1,5 @@
-import { assert, union, object, string, literal } from '../../src';
-import { test } from '../index.test';
+import { assert, union, object, string, literal } from '../../src/index.js';
+import { test } from '../index.test.js';
 
 test<{ a: string } | { b: string }>((value) => {
   assert(value, union([object({ a: string() }), object({ b: string() })]));

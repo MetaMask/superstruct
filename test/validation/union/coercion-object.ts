@@ -1,4 +1,10 @@
-import { union, string, number, defaulted, object } from '../../../src';
+import {
+  union,
+  string,
+  number,
+  defaulted,
+  object,
+} from '../../../src/index.js';
 
 const First = string();
 const Second = object({ a: number(), b: defaulted(number(), 5) });

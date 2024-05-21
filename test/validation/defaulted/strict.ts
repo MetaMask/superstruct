@@ -1,4 +1,4 @@
-import { defaulted, string, type, number } from '../../../src';
+import { defaulted, string, type, number } from '../../../src/index.js';
 
 export const Struct = defaulted(
   type({

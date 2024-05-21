@@ -1,5 +1,5 @@
-import { assert, object, deprecated, any } from '../../src';
-import { test } from '../index.test';
+import { assert, object, deprecated, any } from '../../src/index.js';
+import { test } from '../index.test.js';
 
 test<unknown>((value) => {
   const log = () => {

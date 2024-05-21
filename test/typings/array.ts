@@ -1,5 +1,5 @@
-import { assert, array, number } from '../../src';
-import { test } from '../index.test';
+import { assert, array, number } from '../../src/index.js';
+import { test } from '../index.test.js';
 
 test<unknown[]>((value) => {
   assert(value, array());
