@@ -1,4 +1,4 @@
-import type { Describe } from '../../src/index.js';
+import type { Describe } from '../../src';
 import {
   any,
   object,
@@ -27,8 +27,8 @@ import {
   max,
   min,
   pattern,
-} from '../../src/index.js';
-import { test } from '../index.test.js';
+} from '../../src';
+import { test } from '../index.test';
 
 test<Describe<any>>(() => {
   return any();

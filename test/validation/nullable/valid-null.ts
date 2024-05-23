@@ -1,4 +1,4 @@
-import { number, nullable } from '../../../src/index.js';
+import { number, nullable } from '../../../src';
 
 export const Struct = nullable(number());
 

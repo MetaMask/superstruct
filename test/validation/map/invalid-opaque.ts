@@ -1,4 +1,4 @@
-import { map } from '../../../src/index.js';
+import { map } from '../../../src';
 
 export const Struct = map();
 

@@ -1,4 +1,4 @@
-import { omit, type, string, number } from '../../../src/index.js';
+import { omit, type, string, number } from '../../../src';
 
 export const Struct = omit(
   type({

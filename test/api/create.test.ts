@@ -9,7 +9,7 @@ import {
   defaulted,
   literal,
   coerce,
-} from '../../src/index.js';
+} from '../../src';
 
 describe('create', () => {
   it('missing as helper', () => {

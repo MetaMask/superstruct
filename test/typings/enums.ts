@@ -1,5 +1,5 @@
-import { assert, enums } from '../../src/index.js';
-import { test } from '../index.test.js';
+import { assert, enums } from '../../src';
+import { test } from '../index.test';
 
 test<'a' | 'b' | 'c'>((value) => {
   assert(value, enums(['a', 'b', 'c']));

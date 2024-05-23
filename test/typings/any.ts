@@ -1,5 +1,5 @@
-import { assert, any } from '../../src/index.js';
-import { test } from '../index.test.js';
+import { assert, any } from '../../src';
+import { test } from '../index.test';
 
 test<any>((value) => {
   assert(value, any());

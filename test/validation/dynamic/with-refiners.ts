@@ -1,4 +1,4 @@
-import { dynamic, string, nonempty } from '../../../src/index.js';
+import { dynamic, string, nonempty } from '../../../src';
 
 export const Struct = dynamic(() => nonempty(string()));
 

@@ -1,4 +1,4 @@
-import { intersection, refine, number } from '../../../src/index.js';
+import { intersection, refine, number } from '../../../src';
 
 const First = number();
 const Second = refine(number(), 'positive', (value) => value > 0);

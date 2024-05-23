@@ -1,5 +1,5 @@
-import { assert, nullable, string, object, enums } from '../../src/index.js';
-import { test } from '../index.test.js';
+import { assert, nullable, string, object, enums } from '../../src';
+import { test } from '../index.test';
 
 test<string | null>((value) => {
   assert(value, nullable(string()));

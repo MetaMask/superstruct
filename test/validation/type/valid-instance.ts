@@ -1,4 +1,4 @@
-import { type, string } from '../../../src/index.js';
+import { type, string } from '../../../src';
 
 class Person {
   name: string;

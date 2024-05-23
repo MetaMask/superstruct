@@ -1,4 +1,4 @@
-import { boolean } from '../../../src/index.js';
+import { boolean } from '../../../src';
 
 export const Struct = boolean();
 

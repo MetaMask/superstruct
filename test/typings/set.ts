@@ -1,5 +1,5 @@
-import { assert, set, string } from '../../src/index.js';
-import { test } from '../index.test.js';
+import { assert, set, string } from '../../src';
+import { test } from '../index.test';
 
 test<Set<string>>((value) => {
   assert(value, set(string()));

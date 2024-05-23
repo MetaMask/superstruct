@@ -1,4 +1,4 @@
-import { string, unknown, coerce } from '../../../src/index.js';
+import { string, unknown, coerce } from '../../../src';
 
 export const Struct = coerce(string(), unknown(), (value) =>
   value === null || value === undefined ? 'unknown' : value,

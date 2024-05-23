@@ -1,5 +1,5 @@
-import { assert, integer } from '../../src/index.js';
-import { test } from '../index.test.js';
+import { assert, integer } from '../../src';
+import { test } from '../index.test';
 
 test<number>((value) => {
   assert(value, integer());

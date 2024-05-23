@@ -1,5 +1,5 @@
-import { assert, instance } from '../../src/index.js';
-import { test } from '../index.test.js';
+import { assert, instance } from '../../src';
+import { test } from '../index.test';
 
 test<Date>((value) => {
   assert(value, instance(Date));

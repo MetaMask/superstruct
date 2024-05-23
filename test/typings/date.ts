@@ -1,5 +1,5 @@
-import { assert, date } from '../../src/index.js';
-import { test } from '../index.test.js';
+import { assert, date } from '../../src';
+import { test } from '../index.test';
 
 test<Date>((value) => {
   assert(value, date());

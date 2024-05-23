@@ -1,5 +1,5 @@
-import { assert, bigint } from '../../src/index.js';
-import { test } from '../index.test.js';
+import { assert, bigint } from '../../src';
+import { test } from '../index.test';
 
 test<bigint>((value) => {
   assert(value, bigint());

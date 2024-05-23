@@ -1,5 +1,5 @@
-import { assert, literal } from '../../src/index.js';
-import { test } from '../index.test.js';
+import { assert, literal } from '../../src';
+import { test } from '../index.test';
 
 test<true>((value) => {
   assert(value, literal(true));

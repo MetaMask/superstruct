@@ -1,4 +1,4 @@
-import { type, string, number, nullable } from '../../../src/index.js';
+import { type, string, number, nullable } from '../../../src';
 
 export const Struct = type({
   name: nullable(string()),

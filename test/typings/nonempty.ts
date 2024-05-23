@@ -1,5 +1,5 @@
-import { assert, nonempty, string, array, map, set } from '../../src/index.js';
-import { test } from '../index.test.js';
+import { assert, nonempty, string, array, map, set } from '../../src';
+import { test } from '../index.test';
 
 test<string>((value) => {
   assert(value, nonempty(string()));

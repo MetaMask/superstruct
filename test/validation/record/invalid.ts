@@ -1,4 +1,4 @@
-import { record, string, number } from '../../../src/index.js';
+import { record, string, number } from '../../../src';
 
 export const Struct = record(string(), number());
 

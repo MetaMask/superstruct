@@ -1,4 +1,4 @@
-import { string, empty } from '../../../src/index.js';
+import { string, empty } from '../../../src';
 
 export const Struct = empty(string());
 

@@ -1,4 +1,4 @@
-import { deprecated, number, object } from '../../../src/index.js';
+import { deprecated, number, object } from '../../../src';
 
 export const Struct = object({
   deprecatedKey: deprecated(number(), () => {

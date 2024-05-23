@@ -11,7 +11,7 @@ import {
   create as createValue,
   deprecated,
   StructError,
-} from '../src/index.js';
+} from '../src';
 
 describe('superstruct', () => {
   describe('validation', () => {

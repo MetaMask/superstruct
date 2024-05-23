@@ -1,5 +1,5 @@
-import { assert, type, number } from '../../src/index.js';
-import { test } from '../index.test.js';
+import { assert, type, number } from '../../src';
+import { test } from '../index.test';
 
 test<{ a: number }>((value) => {
   assert(value, type({ a: number() }));

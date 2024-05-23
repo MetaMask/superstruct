@@ -1,4 +1,4 @@
-import { object, array, string } from '../../../src/index.js';
+import { object, array, string } from '../../../src';
 
 export const Struct = object({
   name: string(),

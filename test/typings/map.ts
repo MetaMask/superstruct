@@ -1,5 +1,5 @@
-import { assert, map, string, number } from '../../src/index.js';
-import { test } from '../index.test.js';
+import { assert, map, string, number } from '../../src';
+import { test } from '../index.test';
 
 test<Map<string, number>>((value) => {
   assert(value, map(string(), number()));

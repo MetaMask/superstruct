@@ -1,4 +1,4 @@
-import { bigint } from '../../../src/index.js';
+import { bigint } from '../../../src';
 
 export const Struct = bigint();
 

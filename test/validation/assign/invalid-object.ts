@@ -1,4 +1,4 @@
-import { object, assign, string, number } from '../../../src/index.js';
+import { object, assign, string, number } from '../../../src';
 
 const First = object({ a: string() });
 const Second = object({ a: number(), b: number() });
