@@ -9,16 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.0.0]
 
-### Uncategorized
-
-- Revert "3.0.0 (#20)" ([#20](https://github.com/MetaMask/superstruct/pull/20))
-- 3.0.0 ([#20](https://github.com/MetaMask/superstruct/pull/20))
-- Use `ts-bridge` as build tool, set `moduleResolution` to `NodeNext` ([#18](https://github.com/MetaMask/superstruct/pull/18))
-- Export ObjectSchema, Optionalize, Simplify ([#17](https://github.com/MetaMask/superstruct/pull/17))
-
 ### Added
 
-- Newly exports the following types: `AnyStruct`, `EnumSchema`, `InferStructTuple`, `IsExactMatch`, `IsMatch`, `IsRecord`, `IsTuple`, `ObjectSchema`, `OmitBy`, `Optionalize`, `PickBy`, `Simplify`, `UnionToIntersection`.
+- Newly exports the following types: `AnyStruct`, `EnumSchema`, `InferStructTuple`, `IsExactMatch`, `IsMatch`, `IsRecord`, `IsTuple`, `ObjectSchema`, `OmitBy`, `Optionalize`, `PickBy`, `Simplify`, `UnionToIntersection` ([#18](https://github.com/MetaMask/superstruct/pull/18)).
+
+### Fixed
+
+- **BREAKING:** Expose separate build entry points and type declarations for CommonJS and ESM via package manifest `exports`. ([#18](https://github.com/MetaMask/superstruct/pull/18))
 
 ## [2.0.0]
 
