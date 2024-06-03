@@ -13,10 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Newly exports the following types: `AnyStruct`, `EnumSchema`, `InferStructTuple`, `IsExactMatch`, `IsMatch`, `IsRecord`, `IsTuple`, `ObjectSchema`, `OmitBy`, `Optionalize`, `PickBy`, `Simplify`, `UnionToIntersection` ([#18](https://github.com/MetaMask/superstruct/pull/18))
 
-### Changed
+### Fixed
 
-- **BREAKING:** Expose separate build entry points and type declarations for CommonJS and ESM via package manifest `exports`. ([#18](https://github.com/MetaMask/superstruct/pull/18))
-  - When imported as a module, this package can now resolve as both CommonJS and ESM.
+- **BREAKING:** Expose separate build entry points and type declarations for CommonJS and ESM via package manifest `exports` ([#18](https://github.com/MetaMask/superstruct/pull/18)).
 
 ## [2.0.0]
 
