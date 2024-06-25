@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Newly exports the following types: `Assign`, `If`, `IsUnion`, `ObjectType`, `PartialObjectSchema`, `StructSchema`, `TupleSchema`
+- Newly exports the following types: `Assign`, `If`, `IsUnion`, `ObjectType`, `PartialObjectSchema`, `StructSchema`, `TupleSchema` ([#25](https://github.com/MetaMask/superstruct/pull/25)).
 
 ## [3.0.0]
 
