@@ -9,10 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.1.0]
 
-### Uncategorized
+### Added
 
-- Remove unreleased changelog entry to unblock release ([#27](https://github.com/MetaMask/superstruct/pull/27))
-- Add all types in the `utils` submodule as package-level exports ([#25](https://github.com/MetaMask/superstruct/pull/25))
+- Newly exports the following types: `Assign`, `If`, `IsUnion`, `ObjectType`, `PartialObjectSchema`, `StructSchema`, `TupleSchema` ([#25](https://github.com/MetaMask/superstruct/pull/25))
 
 ## [3.0.0]
 
