@@ -1,5 +1,12 @@
 import type { Failure } from './error.js';
-import type { Struct, Infer, Result, Context, Describe } from './struct.js';
+import type {
+  Struct,
+  Infer,
+  Result,
+  Context,
+  Describe,
+  StrictOptionalStruct,
+} from './struct.js';
 
 /**
  * Check if a value is an iterator.
@@ -336,8 +343,35 @@ export type ObjectSchema = Record<string, Struct<any, any>>;
  * Infer a type from an object struct schema.
  */
 export type ObjectType<Schema extends ObjectSchema> = Simplify<
-  Optionalize<{ [K in keyof Schema]: Infer<Schema[K]> }>
+  // Optionalize<StrictOptionalize<{ [K in keyof Schema]: Infer<Schema[K]> }>>
+  Optionalize<StrictOptionalize<Schema>>
 >;
+
+type OmitStrictOptional<Schema extends ObjectSchema> = Omit<
+  Schema,
+  {
+    [K in keyof Schema]: Schema[K] extends StrictOptionalStruct<any, any>
+      ? K
+      : never;
+  }[keyof Schema]
+>;
+
+type PickStrictOptional<Schema extends ObjectSchema> = Pick<
+  Schema,
+  {
+    [K in keyof Schema]: Schema[K] extends StrictOptionalStruct<any, any>
+      ? K
+      : never;
+  }[keyof Schema]
+>;
+
+type StrictOptionalize<Schema extends ObjectSchema> = {
+  [K in keyof OmitStrictOptional<Schema>]: Infer<OmitStrictOptional<Schema>[K]>;
+} & {
+  [K in keyof PickStrictOptional<Schema>]?: Infer<
+    PickStrictOptional<Schema>[K]
+  >;
+};
 
 /**
  * Omit properties from a type that extend from a specific type.

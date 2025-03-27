@@ -124,6 +124,36 @@ export class Struct<Type = unknown, Schema = unknown> {
   }
 }
 
+// String instead of a Symbol in case of multiple different versions of this library.
+const StrictOptionalBrand = 'STRICT_OPTIONAL';
+
+/**
+ * A `StrictOptionalStruct` is a `Struct` that is used to create strictly optional properties of `object()`
+ * structs.
+ */
+export class StrictOptionalStruct<
+  Type = unknown,
+  Schema = unknown,
+> extends Struct<Type, Schema> {
+  // eslint-disable-next-line no-restricted-syntax
+  private readonly brand: typeof StrictOptionalBrand;
+
+  constructor(props: { type: string; schema: Schema }) {
+    super(props);
+    this.brand = StrictOptionalBrand;
+  }
+
+  static isStrictOptional(value: Struct): value is StrictOptionalStruct {
+    return (
+      typeof value === 'object' &&
+      value !== null &&
+      'brand' in value &&
+      // @ts-expect-error TypeScript is failing to infer that the property exists.
+      value.brand === StrictOptionalBrand
+    );
+  }
+}
+
 /**
  * Assert that a value passes a struct, throwing if it doesn't.
  *
