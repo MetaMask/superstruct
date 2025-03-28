@@ -142,6 +142,7 @@ export class StrictOptionalStruct<
   constructor(props: StructParams<Type, Schema>) {
     super(props);
     this.brand = StrictOptionalBrand;
+    this.type = `optional ${this.type}`;
   }
 
   static isStrictOptional(value: Struct): value is StrictOptionalStruct {
