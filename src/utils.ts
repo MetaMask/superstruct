@@ -5,7 +5,7 @@ import type {
   Result,
   Context,
   Describe,
-  StrictOptionalStruct,
+  ExactOptionalStruct,
 } from './struct.js';
 
 /**
@@ -343,36 +343,34 @@ export type ObjectSchema = Record<string, Struct<any, any>>;
  * Infer a type from an object struct schema.
  */
 export type ObjectType<Schema extends ObjectSchema> = Simplify<
-  // StrictOptionalize first ensures that properties of `strictOptional()` structs
+  // ExactOptionalize first ensures that properties of `exactOptional()` structs
   // are optional, then Optionalize ensures that properties that can have the
   // value `undefined` are optional.
-  Optionalize<StrictOptionalize<Schema>>
+  Optionalize<ExactOptionalize<Schema>>
 >;
 
 /**
- * Make properties of `strictOptional()` structs optional.
+ * Make properties of `exactOptional()` structs optional.
  */
-export type StrictOptionalize<Schema extends ObjectSchema> = {
-  [K in keyof OmitStrictOptional<Schema>]: Infer<OmitStrictOptional<Schema>[K]>;
+export type ExactOptionalize<Schema extends ObjectSchema> = {
+  [K in keyof OmitExactOptional<Schema>]: Infer<OmitExactOptional<Schema>[K]>;
 } & {
-  [K in keyof PickStrictOptional<Schema>]?: Infer<
-    PickStrictOptional<Schema>[K]
-  >;
+  [K in keyof PickExactOptional<Schema>]?: Infer<PickExactOptional<Schema>[K]>;
 };
 
-type OmitStrictOptional<Schema extends ObjectSchema> = Omit<
+type OmitExactOptional<Schema extends ObjectSchema> = Omit<
   Schema,
   {
-    [K in keyof Schema]: Schema[K] extends StrictOptionalStruct<any, any>
+    [K in keyof Schema]: Schema[K] extends ExactOptionalStruct<any, any>
       ? K
       : never;
   }[keyof Schema]
 >;
 
-type PickStrictOptional<Schema extends ObjectSchema> = Pick<
+type PickExactOptional<Schema extends ObjectSchema> = Pick<
   Schema,
   {
-    [K in keyof Schema]: Schema[K] extends StrictOptionalStruct<any, any>
+    [K in keyof Schema]: Schema[K] extends ExactOptionalStruct<any, any>
       ? K
       : never;
   }[keyof Schema]
