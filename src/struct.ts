@@ -1,14 +1,22 @@
 import type { Failure } from './error.js';
 import { StructError } from './error.js';
 import type { StructSchema } from './utils.js';
-import { toFailures, shiftIterator, run } from './utils.js';
+import { isObject, toFailures, shiftIterator, run } from './utils.js';
+
+type StructParams<Type, Schema> = {
+  type: string;
+  schema: Schema;
+  coercer?: Coercer | undefined;
+  validator?: Validator | undefined;
+  refiner?: Refiner<Type> | undefined;
+  entries?: Struct<Type, Schema>['entries'] | undefined;
+};
 
 /**
  * `Struct` objects encapsulate the validation logic for a specific type of
  * values. Once constructed, you use the `assert`, `is` or `validate` helpers to
  * validate unknown input data against the struct.
  */
-
 export class Struct<Type = unknown, Schema = unknown> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   readonly TYPE!: Type;
@@ -28,14 +36,7 @@ export class Struct<Type = unknown, Schema = unknown> {
     context: Context,
   ) => Iterable<[string | number, unknown, Struct<any> | Struct<never>]>;
 
-  constructor(props: {
-    type: string;
-    schema: Schema;
-    coercer?: Coercer | undefined;
-    validator?: Validator | undefined;
-    refiner?: Refiner<Type> | undefined;
-    entries?: Struct<Type, Schema>['entries'] | undefined;
-  }) {
+  constructor(props: StructParams<Type, Schema>) {
     const {
       type,
       schema,
@@ -138,18 +139,14 @@ export class StrictOptionalStruct<
   // eslint-disable-next-line no-restricted-syntax
   private readonly brand: typeof StrictOptionalBrand;
 
-  constructor(props: { type: string; schema: Schema }) {
+  constructor(props: StructParams<Type, Schema>) {
     super(props);
     this.brand = StrictOptionalBrand;
   }
 
   static isStrictOptional(value: Struct): value is StrictOptionalStruct {
     return (
-      typeof value === 'object' &&
-      value !== null &&
-      'brand' in value &&
-      // @ts-expect-error TypeScript is failing to infer that the property exists.
-      value.brand === StrictOptionalBrand
+      isObject(value) && 'brand' in value && value.brand === StrictOptionalBrand
     );
   }
 }
