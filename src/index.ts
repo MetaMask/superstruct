@@ -22,6 +22,7 @@ export type {
   PartialObjectSchema,
   PickBy,
   Simplify,
+  ExactOptionalize,
   StructSchema,
   TupleSchema,
   UnionToIntersection,
