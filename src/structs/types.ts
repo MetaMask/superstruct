@@ -1,5 +1,5 @@
 import type { Infer } from '../struct.js';
-import { StrictOptionalStruct, Struct } from '../struct.js';
+import { ExactOptionalStruct, Struct } from '../struct.js';
 import type {
   ObjectSchema,
   ObjectType,
@@ -457,9 +457,9 @@ export function object<Schema extends ObjectSchema>(
 
         for (const key of knowns) {
           unknowns.delete(key);
-          const propertySchema = schema[key] as Struct;
+          const propertySchema = schema[key];
           if (
-            StrictOptionalStruct.isStrictOptional(propertySchema) &&
+            ExactOptionalStruct.isExactOptional(propertySchema) &&
             !Object.prototype.hasOwnProperty.call(value, key)
           ) {
             continue;
@@ -502,21 +502,19 @@ export function optional<Type, Schema>(
 }
 
 /**
- * Augment a struct such that, if it is the property of an object, it is strictly optional.
+ * Augment a struct such that, if it is the property of an object, it is exactly optional.
  * In other words, it is either present with the correct type, or not present at all.
  *
  * NOTE: Only intended for use with `object()` structs.
  *
  * @param struct - The struct to augment.
- * @returns A new struct that can be used to create strictly optional properties of `object()`
+ * @returns A new struct that can be used to create exactly optional properties of `object()`
  * structs.
  */
-export function strictOptional<Type, Schema>(
+export function exactOptional<Type, Schema>(
   struct: Struct<Type, Schema>,
-): StrictOptionalStruct<Type, Schema> {
-  return new StrictOptionalStruct({
-    ...struct,
-  });
+): ExactOptionalStruct<Type, Schema> {
+  return new ExactOptionalStruct(struct);
 }
 
 /**

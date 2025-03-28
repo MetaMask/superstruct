@@ -126,28 +126,30 @@ export class Struct<Type = unknown, Schema = unknown> {
 }
 
 // String instead of a Symbol in case of multiple different versions of this library.
-const StrictOptionalBrand = 'STRICT_OPTIONAL';
+const ExactOptionalBrand = 'STRICT_OPTIONAL';
 
 /**
- * A `StrictOptionalStruct` is a `Struct` that is used to create strictly optional properties of `object()`
+ * A `ExactOptionalStruct` is a `Struct` that is used to create exactly optional properties of `object()`
  * structs.
  */
-export class StrictOptionalStruct<
+export class ExactOptionalStruct<
   Type = unknown,
   Schema = unknown,
 > extends Struct<Type, Schema> {
   // eslint-disable-next-line no-restricted-syntax
-  private readonly brand: typeof StrictOptionalBrand;
+  private readonly brand: typeof ExactOptionalBrand;
 
   constructor(props: StructParams<Type, Schema>) {
-    super(props);
-    this.brand = StrictOptionalBrand;
-    this.type = `optional ${this.type}`;
+    super({
+      ...props,
+      type: `exact optional ${props.type}`,
+    });
+    this.brand = ExactOptionalBrand;
   }
 
-  static isStrictOptional(value: Struct): value is StrictOptionalStruct {
+  static isExactOptional(value: unknown): value is ExactOptionalStruct {
     return (
-      isObject(value) && 'brand' in value && value.brand === StrictOptionalBrand
+      isObject(value) && 'brand' in value && value.brand === ExactOptionalBrand
     );
   }
 }

@@ -1,6 +1,6 @@
 import {
   assert,
-  strictOptional,
+  exactOptional,
   string,
   number,
   object,
@@ -9,7 +9,7 @@ import {
 import { test } from '../index.test';
 
 test<string | undefined>((value) => {
-  assert(value, strictOptional(string()));
+  assert(value, exactOptional(string()));
   return value;
 });
 
@@ -20,16 +20,26 @@ test<{
   d?: {
     e: string;
   };
+  f?: {
+    g?: {
+      h: string;
+    };
+  };
 }>((value) => {
   assert(
     value,
     object({
-      a: strictOptional(number()),
+      a: exactOptional(number()),
       b: string(),
-      c: strictOptional(enums(['a', 'b'])),
-      d: strictOptional(
+      c: exactOptional(enums(['a', 'b'])),
+      d: exactOptional(
         object({
           e: string(),
+        }),
+      ),
+      f: exactOptional(
+        object({
+          g: exactOptional(object({ h: string() })),
         }),
       ),
     }),
