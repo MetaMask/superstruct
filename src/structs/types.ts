@@ -457,7 +457,7 @@ export function object<Schema extends ObjectSchema>(
 
         for (const key of knowns) {
           unknowns.delete(key);
-          const propertySchema = schema[key] as Struct<any>;
+          const propertySchema = schema[key] as Struct;
           if (
             StrictOptionalStruct.isStrictOptional(propertySchema) &&
             !Object.prototype.hasOwnProperty.call(value, key)
