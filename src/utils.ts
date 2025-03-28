@@ -343,9 +343,22 @@ export type ObjectSchema = Record<string, Struct<any, any>>;
  * Infer a type from an object struct schema.
  */
 export type ObjectType<Schema extends ObjectSchema> = Simplify<
-  // Optionalize<StrictOptionalize<{ [K in keyof Schema]: Infer<Schema[K]> }>>
+  // StrictOptionalize first ensures that properties of `strictOptional()` structs
+  // are optional, then Optionalize ensures that properties that can have the
+  // value `undefined` are optional.
   Optionalize<StrictOptionalize<Schema>>
 >;
+
+/**
+ * Make properties of `strictOptional()` structs optional.
+ */
+export type StrictOptionalize<Schema extends ObjectSchema> = {
+  [K in keyof OmitStrictOptional<Schema>]: Infer<OmitStrictOptional<Schema>[K]>;
+} & {
+  [K in keyof PickStrictOptional<Schema>]?: Infer<
+    PickStrictOptional<Schema>[K]
+  >;
+};
 
 type OmitStrictOptional<Schema extends ObjectSchema> = Omit<
   Schema,
@@ -365,18 +378,15 @@ type PickStrictOptional<Schema extends ObjectSchema> = Pick<
   }[keyof Schema]
 >;
 
-type StrictOptionalize<Schema extends ObjectSchema> = {
-  [K in keyof OmitStrictOptional<Schema>]: Infer<OmitStrictOptional<Schema>[K]>;
-} & {
-  [K in keyof PickStrictOptional<Schema>]?: Infer<
-    PickStrictOptional<Schema>[K]
-  >;
-};
+/**
+ * Make properties that can have the value `undefined` optional.
+ */
+export type Optionalize<Schema extends object> = OmitBy<Schema, undefined> &
+  Partial<PickBy<Schema, undefined>>;
 
 /**
  * Omit properties from a type that extend from a specific type.
  */
-
 export type OmitBy<Type, Value> = Omit<
   Type,
   {
@@ -385,23 +395,8 @@ export type OmitBy<Type, Value> = Omit<
 >;
 
 /**
- * Normalize properties of a type that allow `undefined` to make them optional.
- */
-export type Optionalize<Schema extends object> = OmitBy<Schema, undefined> &
-  Partial<PickBy<Schema, undefined>>;
-
-/**
- * Transform an object schema type to represent a partial.
- */
-
-export type PartialObjectSchema<Schema extends ObjectSchema> = {
-  [K in keyof Schema]: Struct<Infer<Schema[K]> | undefined>;
-};
-
-/**
  * Pick properties from a type that extend from a specific type.
  */
-
 export type PickBy<Type, Value> = Pick<
   Type,
   {
@@ -410,9 +405,15 @@ export type PickBy<Type, Value> = Pick<
 >;
 
 /**
+ * Transform an object schema type to represent a partial.
+ */
+export type PartialObjectSchema<Schema extends ObjectSchema> = {
+  [K in keyof Schema]: Struct<Infer<Schema[K]> | undefined>;
+};
+
+/**
  * Simplifies a type definition to its most basic representation.
  */
-
 export type Simplify<Type> = Type extends any[] | Date
   ? Type
   : // eslint-disable-next-line @typescript-eslint/ban-types
@@ -425,7 +426,6 @@ export type If<Condition extends boolean, Then, Else> = Condition extends true
 /**
  * A schema for any type of struct.
  */
-
 export type StructSchema<Type> = [Type] extends [string | undefined | null]
   ? [Type] extends [IsMatch<Type, string | undefined | null>]
     ? null
@@ -476,7 +476,6 @@ export type TupleSchema<Type> = { [K in keyof Type]: Struct<Type[K]> };
 /**
  * Shorthand type for matching any `Struct`.
  */
-
 export type AnyStruct = Struct<any, any>;
 
 /**
@@ -485,7 +484,6 @@ export type AnyStruct = Struct<any, any>;
  * This is used to recursively retrieve the type from `union` `intersection` and
  * `tuple` structs.
  */
-
 export type InferStructTuple<
   Tuple extends AnyStruct[],
   Length extends number = Tuple['length'],
