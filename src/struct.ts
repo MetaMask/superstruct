@@ -126,11 +126,11 @@ export class Struct<Type = unknown, Schema = unknown> {
 }
 
 // String instead of a Symbol in case of multiple different versions of this library.
-const ExactOptionalBrand = 'STRICT_OPTIONAL';
+const ExactOptionalBrand = 'EXACT_OPTIONAL';
 
 /**
- * A `ExactOptionalStruct` is a `Struct` that is used to create exactly optional properties of `object()`
- * structs.
+ * An `ExactOptionalStruct` is a `Struct` that is used to create exactly optional
+ * properties of `object()` structs.
  */
 export class ExactOptionalStruct<
   Type = unknown,
