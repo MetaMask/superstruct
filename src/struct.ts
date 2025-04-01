@@ -136,8 +136,12 @@ export class ExactOptionalStruct<
   Type = unknown,
   Schema = unknown,
 > extends Struct<Type, Schema> {
+  // ESLint wants us to make this #-private, but we need it to be accessible by
+  // other versions of this library at runtime. If it were #-private, the
+  // implementation would break if multiple instances of this library were
+  // loaded at runtime.
   // eslint-disable-next-line no-restricted-syntax
-  private readonly brand: typeof ExactOptionalBrand;
+  readonly brand: typeof ExactOptionalBrand;
 
   constructor(props: StructParams<Type, Schema>) {
     super({
