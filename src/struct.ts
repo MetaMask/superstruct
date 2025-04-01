@@ -1,14 +1,22 @@
 import type { Failure } from './error.js';
 import { StructError } from './error.js';
 import type { StructSchema } from './utils.js';
-import { toFailures, shiftIterator, run } from './utils.js';
+import { isObject, toFailures, shiftIterator, run } from './utils.js';
+
+type StructParams<Type, Schema> = {
+  type: string;
+  schema: Schema;
+  coercer?: Coercer | undefined;
+  validator?: Validator | undefined;
+  refiner?: Refiner<Type> | undefined;
+  entries?: Struct<Type, Schema>['entries'] | undefined;
+};
 
 /**
  * `Struct` objects encapsulate the validation logic for a specific type of
  * values. Once constructed, you use the `assert`, `is` or `validate` helpers to
  * validate unknown input data against the struct.
  */
-
 export class Struct<Type = unknown, Schema = unknown> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   readonly TYPE!: Type;
@@ -28,14 +36,7 @@ export class Struct<Type = unknown, Schema = unknown> {
     context: Context,
   ) => Iterable<[string | number, unknown, Struct<any> | Struct<never>]>;
 
-  constructor(props: {
-    type: string;
-    schema: Schema;
-    coercer?: Coercer | undefined;
-    validator?: Validator | undefined;
-    refiner?: Refiner<Type> | undefined;
-    entries?: Struct<Type, Schema>['entries'] | undefined;
-  }) {
+  constructor(props: StructParams<Type, Schema>) {
     const {
       type,
       schema,
@@ -121,6 +122,39 @@ export class Struct<Type = unknown, Schema = unknown> {
     } = {},
   ): [StructError, undefined] | [undefined, Type] {
     return validate(value, this, options);
+  }
+}
+
+// String instead of a Symbol in case of multiple different versions of this library.
+const ExactOptionalBrand = 'EXACT_OPTIONAL';
+
+/**
+ * An `ExactOptionalStruct` is a `Struct` that is used to create exactly optional
+ * properties of `object()` structs.
+ */
+export class ExactOptionalStruct<
+  Type = unknown,
+  Schema = unknown,
+> extends Struct<Type, Schema> {
+  // ESLint wants us to make this #-private, but we need it to be accessible by
+  // other versions of this library at runtime. If it were #-private, the
+  // implementation would break if multiple instances of this library were
+  // loaded at runtime.
+  // eslint-disable-next-line no-restricted-syntax
+  readonly brand: typeof ExactOptionalBrand;
+
+  constructor(props: StructParams<Type, Schema>) {
+    super({
+      ...props,
+      type: `exact optional ${props.type}`,
+    });
+    this.brand = ExactOptionalBrand;
+  }
+
+  static isExactOptional(value: unknown): value is ExactOptionalStruct {
+    return (
+      isObject(value) && 'brand' in value && value.brand === ExactOptionalBrand
+    );
   }
 }
 
