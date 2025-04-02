@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Newly exports the `exactOptional` struct ([#32](https://github.com/MetaMask/superstruct/pull/32))
+- Add `exactOptional` struct ([#32](https://github.com/MetaMask/superstruct/pull/32))
   - This enables adding strictly optional fields to `object` structs when paired with TypeScript's
     `exactOptionalPropertyTypes`.
 
