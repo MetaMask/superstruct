@@ -9,12 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.2.0]
 
-### Uncategorized
+### Added
 
-- feat: Add `exactOptional` struct ([#32](https://github.com/MetaMask/superstruct/pull/32))
-- Update workflows to use `MetaMask/action-checkout-and-setup` ([#33](https://github.com/MetaMask/superstruct/pull/33))
-- chore: update security-code-scanner@main to action-security-code-scanner@v1 ([#31](https://github.com/MetaMask/superstruct/pull/31))
-- chore: add workflow_dispatch to security-code-scanner ([#30](https://github.com/MetaMask/superstruct/pull/30))
+- Newly exports the `exactOptional` struct ([#32](https://github.com/MetaMask/superstruct/pull/32))
+  - This enables adding strictly optional fields to `object` structs when paired with TypeScript's
+    `exactOptionalPropertyTypes`.
 
 ## [3.1.0]
 
