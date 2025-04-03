@@ -362,7 +362,9 @@ type OmitExactOptional<Schema extends ObjectSchema> = Omit<
   Schema,
   {
     [K in keyof Schema]: Schema[K] extends ExactOptionalStruct<any, any>
-      ? K
+      ? Schema[K] extends never
+        ? never
+        : K
       : never;
   }[keyof Schema]
 >;
@@ -371,7 +373,9 @@ type PickExactOptional<Schema extends ObjectSchema> = Pick<
   Schema,
   {
     [K in keyof Schema]: Schema[K] extends ExactOptionalStruct<any, any>
-      ? K
+      ? Schema[K] extends never
+        ? never
+        : K
       : never;
   }[keyof Schema]
 >;
