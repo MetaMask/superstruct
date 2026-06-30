@@ -684,6 +684,12 @@ export function type<Schema extends ObjectSchema>(
     *entries(value) {
       if (isObject(value)) {
         for (const k of keys) {
+          if (
+            ExactOptionalStruct.isExactOptional(schema[k]) &&
+            !Object.prototype.hasOwnProperty.call(value, k)
+          ) {
+            continue;
+          }
           yield [k, value[k], schema[k] as Struct<any>];
         }
       }
