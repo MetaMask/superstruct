@@ -1,0 +1,12 @@
+import { type, exactOptional, string, number } from '../../../src';
+
+export const Struct = type({
+  name: string(),
+  age: exactOptional(number()),
+});
+
+export const data = {
+  name: 'john',
+};
+
+export const output = data;

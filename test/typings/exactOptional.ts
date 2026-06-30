@@ -4,6 +4,7 @@ import {
   string,
   number,
   object,
+  type,
   enums,
   never,
   record,
@@ -56,6 +57,20 @@ test<{
     value,
     object({
       a: exactOptional(record(string(), never())),
+    }),
+  );
+  return value;
+});
+
+test<{
+  a?: number;
+  b: string;
+}>((value) => {
+  assert(
+    value,
+    type({
+      a: exactOptional(number()),
+      b: string(),
     }),
   );
   return value;
