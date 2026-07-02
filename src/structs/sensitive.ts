@@ -1,6 +1,6 @@
+import type { Failure } from '../error.js';
 import type { Context } from '../struct.js';
 import { Struct } from '../struct.js';
-import type { Failure } from '../error.js';
 import type { AnyStruct } from '../utils.js';
 
 export const SENSITIVE_REDACTED = '***';
@@ -50,6 +50,7 @@ export function withRedactedBranch(
   parentObj: unknown,
   sensitiveKeys: string[],
 ): AnyStruct {
+  // eslint-disable-next-line jsdoc/require-jsdoc
   function* redactBranch(failures: Iterable<Failure>): Iterable<Failure> {
     for (const failure of failures) {
       yield {
@@ -126,7 +127,6 @@ export function withRedactedBranch(
  * // throws: At path: secret -- Expected a value of type `string`,
  * //         but received: `***`
  * ```
- *
  * @param struct - The struct to wrap.
  * @returns The wrapped struct with identical validation logic but redacted
  * failures.
@@ -134,6 +134,7 @@ export function withRedactedBranch(
 export function sensitive<Type, Schema>(
   struct: Struct<Type, Schema>,
 ): Struct<Type, Schema> {
+  // eslint-disable-next-line jsdoc/require-jsdoc
   function* redact(failures: Iterable<Failure>): Iterable<Failure> {
     for (const failure of failures) {
       yield {

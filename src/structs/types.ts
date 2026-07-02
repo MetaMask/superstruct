@@ -547,7 +547,10 @@ export function object<Schema extends ObjectSchema>(
   // constructor receives `schema ?? null`. At this point `schema` is defined,
   // so the schema slot is actually `Schema`. The cast strips the `| null` so
   // `withSensitiveEntries` can accept it.
-  return withSensitiveEntries(base as unknown as Struct<unknown, Schema>, schema);
+  return withSensitiveEntries(
+    base as unknown as Struct<unknown, Schema>,
+    schema,
+  );
 }
 
 /**
