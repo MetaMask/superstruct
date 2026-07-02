@@ -8,7 +8,7 @@ import type {
   UnionToIntersection,
 } from '../utils.js';
 import { print, run, isObject } from '../utils.js';
-import { sensitiveStructs, withRedactedBranch } from './sensitive.js';
+import { isSensitiveStruct, withRedactedBranch } from './sensitive.js';
 import { define } from './utilities.js';
 
 /**
@@ -35,8 +35,7 @@ function withSensitiveEntries<Type, Schema extends ObjectSchema>(
     // second `schema[key]` access as potentially undefined (it does not
     // re-narrow repeated index reads), so the cast to `AnyStruct` is required.
     (key) =>
-      schema[key] !== undefined &&
-      sensitiveStructs.has(schema[key] as AnyStruct),
+      schema[key] !== undefined && isSensitiveStruct(schema[key] as AnyStruct),
   );
 
   if (sensitiveKeys.length === 0) {

@@ -8,7 +8,17 @@ export const SENSITIVE_REDACTED = '***';
 // Tracks which struct instances were created by `sensitive()`. Using a `WeakSet`
 // avoids mutating the struct object itself and does not prevent garbage
 // collection when a struct goes out of scope.
-export const sensitiveStructs = new WeakSet<AnyStruct>();
+const sensitiveStructs = new WeakSet<AnyStruct>();
+
+/**
+ * Check whether a struct was created by `sensitive()`.
+ *
+ * @param struct - The struct to check.
+ * @returns `true` if the struct was wrapped with `sensitive()`.
+ */
+export function isSensitiveStruct(struct: AnyStruct): boolean {
+  return sensitiveStructs.has(struct);
+}
 
 /**
  * Return a shallow copy of `sourceObj` with each key in `keys` replaced by
