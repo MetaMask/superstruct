@@ -9,10 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.3.0]
 
-### Uncategorized
+### Added
 
-- feat: add `exactOptional` support in `type` struct ([#38](https://github.com/MetaMask/superstruct/pull/38))
-- ci: update `action-npm-publish` + upgrade yarn@4.16.0 ([#37](https://github.com/MetaMask/superstruct/pull/37))
+- Add `exactOptional` support in `type` struct ([#38](https://github.com/MetaMask/superstruct/pull/38))
 
 ## [3.2.1]
 
