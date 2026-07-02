@@ -1,0 +1,166 @@
+import type { Context } from '../struct.js';
+import { Struct } from '../struct.js';
+import type { Failure } from '../error.js';
+import type { AnyStruct } from '../utils.js';
+
+export const SENSITIVE_REDACTED = '***';
+
+// Tracks which struct instances were created by `sensitive()`. Using a `WeakSet`
+// avoids mutating the struct object itself and does not prevent garbage
+// collection when a struct goes out of scope.
+export const sensitiveStructs = new WeakSet<AnyStruct>();
+
+/**
+ * Return a shallow copy of `sourceObj` with each key in `keys` replaced by
+ * the redaction placeholder.
+ *
+ * @param sourceObj - The source object to copy and redact.
+ * @param keys - The property names to redact.
+ * @returns A shallow copy with the specified keys replaced.
+ */
+function redactKeys(
+  sourceObj: Record<string, unknown>,
+  keys: string[],
+): Record<string, unknown> {
+  const redacted = { ...sourceObj };
+  for (const key of keys) {
+    if (key in redacted) {
+      redacted[key] = SENSITIVE_REDACTED;
+    }
+  }
+  return redacted;
+}
+
+/**
+ * Wrap a struct so that every failure it emits has any occurrence of
+ * `parentObj` in `failure.branch` replaced with a sanitised copy where
+ * `sensitiveKeys` are redacted. This prevents the parent object (which holds
+ * secret field values) from leaking through sibling-field failures.
+ *
+ * The wrapping propagates recursively through `entries` so that failures from
+ * deeply nested sibling structs are covered too.
+ *
+ * @param struct - The struct whose failures should be patched.
+ * @param parentObj - The parent-object reference to look for in branch arrays.
+ * @param sensitiveKeys - Keys to redact from `parentObj` when it appears.
+ * @returns The wrapped struct.
+ */
+export function withRedactedBranch(
+  struct: AnyStruct,
+  parentObj: unknown,
+  sensitiveKeys: string[],
+): AnyStruct {
+  function* redactBranch(failures: Iterable<Failure>): Iterable<Failure> {
+    for (const failure of failures) {
+      yield {
+        ...failure,
+        // Replace the parent object in the branch with a sanitised copy.
+        // Reference equality (`===`) is intentional: we only want to touch
+        // this specific parent, not an unrelated object at a different depth
+        // that might happen to have the same shape.
+        branch: failure.branch.map((branchItem) => {
+          if (
+            branchItem !== parentObj ||
+            typeof parentObj !== 'object' ||
+            parentObj === null
+          ) {
+            return branchItem;
+          }
+          return redactKeys(
+            parentObj as Record<string, unknown>,
+            sensitiveKeys,
+          );
+        }),
+      };
+    }
+  }
+
+  // `as unknown as AnyStruct` is necessary because the `Struct` constructor
+  // infers `Type = unknown` when the generics cannot be resolved from the
+  // spread of an `AnyStruct`, producing `Struct<unknown, ...>` which is not
+  // directly assignable to `Struct<any, ...>` (`AnyStruct`) without the cast.
+  return new Struct({
+    ...struct,
+    validator(value, context): ReturnType<Struct['validator']> {
+      return redactBranch(struct.validator(value, context));
+    },
+    refiner(value, context): ReturnType<Struct['refiner']> {
+      return redactBranch(struct.refiner(value, context));
+    },
+    // Propagate branch redaction recursively so that failures originating from
+    // any depth inside a sibling struct are also sanitised.
+    *entries(value: unknown, context: Context): ReturnType<Struct['entries']> {
+      for (const entry of struct.entries(value, context)) {
+        const [fieldKey, fieldValue, fieldStruct] = entry;
+        yield [
+          fieldKey,
+          fieldValue,
+          // `AnyStruct` is `Struct<any, any>`, while the tuple narrows only to
+          // `Struct<any> | Struct<never>` (second generic left as `unknown`).
+          // The cast is safe because both forms represent untyped structs at runtime.
+          withRedactedBranch(
+            fieldStruct as AnyStruct,
+            parentObj,
+            sensitiveKeys,
+          ),
+        ];
+      }
+    },
+  }) as unknown as AnyStruct;
+}
+
+/**
+ * Wrap a struct so that any validation failure redacts the actual value from
+ * the error message, `StructError.value`, and `StructError.branch`. Use this
+ * for fields that hold secrets to prevent
+ * sensitive material from leaking into error logs or external services.
+ *
+ * When composed with the `object()` or `type()` structs, sibling-field
+ * failures will also have the parent object's sensitive keys redacted from
+ * their branch.
+ *
+ * @example
+ * ```ts
+ * const MyStruct = object({ secret: sensitive(string()) });
+ * assert({ secret: 123 }, MyStruct);
+ * // throws: At path: secret -- Expected a value of type `string`,
+ * //         but received: `***`
+ * ```
+ *
+ * @param struct - The struct to wrap.
+ * @returns The wrapped struct with identical validation logic but redacted
+ * failures.
+ */
+export function sensitive<Type, Schema>(
+  struct: Struct<Type, Schema>,
+): Struct<Type, Schema> {
+  function* redact(failures: Iterable<Failure>): Iterable<Failure> {
+    for (const failure of failures) {
+      yield {
+        ...failure,
+        value: SENSITIVE_REDACTED,
+        message: `Expected a value of type \`${struct.type}\`, but received: \`${SENSITIVE_REDACTED}\``,
+        branch: failure.branch.map(() => SENSITIVE_REDACTED),
+      };
+    }
+  }
+
+  // `as unknown as Struct<Type, Schema>` is necessary because the `Struct`
+  // constructor loses the generic `Type` parameter when the result is stored in
+  // a variable (it infers `Struct<unknown, Schema>` from the spread), so we must
+  // reassert the type we know is correct.
+  const wrapped = new Struct({
+    ...struct,
+    validator(value, context): ReturnType<Struct['validator']> {
+      return redact(struct.validator(value, context));
+    },
+    refiner(value, context): ReturnType<Struct['refiner']> {
+      return redact(struct.refiner(value as Type, context));
+    },
+  }) as unknown as Struct<Type, Schema>;
+
+  // Register the wrapped struct so that `object()` and `type()` can detect
+  // which schema keys are sensitive and patch sibling-field failures accordingly.
+  sensitiveStructs.add(wrapped as AnyStruct);
+  return wrapped;
+}
