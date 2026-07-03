@@ -1,4 +1,10 @@
-import { exactOptional, literal, object, sensitive, string } from '../../../src';
+import {
+  exactOptional,
+  literal,
+  object,
+  sensitive,
+  string,
+} from '../../../src';
 
 export const Struct = object({
   secret: exactOptional(sensitive(string())),

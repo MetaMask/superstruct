@@ -45,6 +45,14 @@ function withSensitiveEntries<Type, Schema extends ObjectSchema>(
   return new Struct({
     ...base,
     *entries(value: unknown, context: Context) {
+      // `run` initialises `branch` before coercion runs, so `value` here may
+      // be a freshly-created coerced copy (e.g. `object()`'s `{ ...value }`)
+      // while `context.branch[last]` still holds the original reference that
+      // ends up in failure branches. Using the branch reference ensures the
+      // `===` check inside `withRedactedBranch` matches when coercion is active.
+      // Falls back to `value` if branch is somehow empty (entries called outside
+      // of `run`).
+      const parentInBranch = context.branch[context.branch.length - 1] ?? value;
       for (const entry of base.entries(value, context)) {
         const [fieldKey, fieldValue, fieldStruct] = entry;
         // The entries tuple types the third element as `Struct<any> |
@@ -54,7 +62,11 @@ function withSensitiveEntries<Type, Schema extends ObjectSchema>(
         yield [
           fieldKey,
           fieldValue,
-          withRedactedBranch(fieldStruct as AnyStruct, value, sensitiveKeys),
+          withRedactedBranch(
+            fieldStruct as AnyStruct,
+            parentInBranch,
+            sensitiveKeys,
+          ),
         ];
       }
     },
