@@ -768,9 +768,6 @@ export function type<Schema extends ObjectSchema>(
     },
   });
 
-  // `new Struct()` infers `Type = unknown` from the spread, even though the
-  // struct validates `ObjectType<Schema>` values. The cast asserts the correct
-  // type so that `withSensitiveEntries` propagates it through its return value.
   return withSensitiveEntries(base, schema);
 }
 
