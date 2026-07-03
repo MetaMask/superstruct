@@ -5,11 +5,12 @@ import type { AnyStruct } from '../utils.js';
 
 export const SENSITIVE_REDACTED = '***';
 
-// Unique brand set on every struct created by `sensitive()`. Because the
-// `Struct` constructor copies Symbol-keyed properties from its `props` spread,
-// any wrapper built with `new Struct({ ...sensitiveStruct, ... })` inherits
-// the brand automatically — no manual tracking required.
-const SENSITIVE_BRAND: unique symbol = Symbol('sensitive');
+// Global-registry Symbol so the brand is shared across multiple instances of
+// this library loaded in the same runtime (e.g. npm dedup failure). Compare
+// with `ExactOptionalBrand`, which uses a plain string for the same reason.
+// Using Symbol.for() (not Symbol()) means isSensitiveStruct() works even when
+// `sensitive()` and `object()` come from different copies of this package.
+const SENSITIVE_BRAND = Symbol.for('superstruct.sensitive');
 
 /**
  * Check whether a struct was created by `sensitive()`, or wraps one.
