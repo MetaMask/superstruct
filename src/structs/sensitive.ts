@@ -86,10 +86,6 @@ export function withRedactedBranch(
     }
   }
 
-  // `as unknown as AnyStruct` is necessary because the `Struct` constructor
-  // infers `Type = unknown` when the generics cannot be resolved from the
-  // spread of an `AnyStruct`, producing `Struct<unknown, ...>` which is not
-  // directly assignable to `Struct<any, ...>` (`AnyStruct`) without the cast.
   return new Struct({
     ...struct,
     validator(value, context): ReturnType<Struct['validator']> {
@@ -117,7 +113,7 @@ export function withRedactedBranch(
         ];
       }
     },
-  }) as unknown as AnyStruct;
+  });
 }
 
 /**
@@ -156,19 +152,15 @@ export function sensitive<Type, Schema>(
     }
   }
 
-  // `as unknown as Struct<Type, Schema>` is necessary because the `Struct`
-  // constructor loses the generic `Type` parameter when the result is stored in
-  // a variable (it infers `Struct<unknown, Schema>` from the spread), so we must
-  // reassert the type we know is correct.
   const wrapped = new Struct({
     ...struct,
     validator(value, context): ReturnType<Struct['validator']> {
       return redact(struct.validator(value, context));
     },
-    refiner(value, context): ReturnType<Struct['refiner']> {
-      return redact(struct.refiner(value as Type, context));
+    refiner(value: Type, context): ReturnType<Struct['refiner']> {
+      return redact(struct.refiner(value, context));
     },
-  }) as unknown as Struct<Type, Schema>;
+  });
 
   // Register the wrapped struct so that `object()` and `type()` can detect
   // which schema keys are sensitive and patch sibling-field failures accordingly.

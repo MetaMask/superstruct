@@ -42,10 +42,6 @@ function withSensitiveEntries<Type, Schema extends ObjectSchema>(
     return base;
   }
 
-  // Spreading `base` into a new `Struct` loses the `Type` generic — the
-  // constructor infers `Struct<unknown, Schema>` from the spread. We only
-  // override `entries` and keep all other hooks unchanged, so the runtime
-  // behaviour is identical to `Struct<Type, Schema>`.
   return new Struct({
     ...base,
     *entries(value: unknown, context: Context) {
@@ -62,7 +58,7 @@ function withSensitiveEntries<Type, Schema extends ObjectSchema>(
         ];
       }
     },
-  }) as unknown as Struct<Type, Schema>;
+  });
 }
 
 /**
@@ -503,7 +499,7 @@ export function object<Schema extends ObjectSchema>(
 ): any {
   const knowns = schema ? Object.keys(schema) : [];
   const Never = never();
-  const base = new Struct({
+  const base: Struct<ObjectType<Schema>, Schema | null> = new Struct({
     type: 'object',
     schema: schema ?? null,
     *entries(value) {
@@ -547,7 +543,7 @@ export function object<Schema extends ObjectSchema>(
   // so the schema slot is actually `Schema`. The cast strips the `| null` so
   // `withSensitiveEntries` can accept it.
   return withSensitiveEntries(
-    base as unknown as Struct<unknown, Schema>,
+    base as Struct<ObjectType<Schema>, Schema>,
     schema,
   );
 }
@@ -746,7 +742,7 @@ export function type<Schema extends ObjectSchema>(
   schema: Schema,
 ): Struct<ObjectType<Schema>, Schema> {
   const keys = Object.keys(schema);
-  const base = new Struct({
+  const base: Struct<ObjectType<Schema>, Schema> = new Struct({
     type: 'type',
     schema,
     *entries(value) {
@@ -775,10 +771,7 @@ export function type<Schema extends ObjectSchema>(
   // `new Struct()` infers `Type = unknown` from the spread, even though the
   // struct validates `ObjectType<Schema>` values. The cast asserts the correct
   // type so that `withSensitiveEntries` propagates it through its return value.
-  return withSensitiveEntries(
-    base as unknown as Struct<ObjectType<Schema>, Schema>,
-    schema,
-  );
+  return withSensitiveEntries(base, schema);
 }
 
 /**
