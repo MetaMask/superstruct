@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add `sensitive` struct and `SENSITIVE_REDACTED` constant for redacting secret values from validation errors ([#41](https://github.com/MetaMask/superstruct/pull/41))
+- Add `sensitive` struct for redacting secret values from validation errors ([#41](https://github.com/MetaMask/superstruct/pull/41))
 
 ## [3.3.0]
 
