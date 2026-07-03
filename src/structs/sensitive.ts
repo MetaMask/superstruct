@@ -5,19 +5,20 @@ import type { AnyStruct } from '../utils.js';
 
 export const SENSITIVE_REDACTED = '***';
 
-// Tracks which struct instances were created by `sensitive()`. Using a `WeakSet`
-// avoids mutating the struct object itself and does not prevent garbage
-// collection when a struct goes out of scope.
-const sensitiveStructs = new WeakSet<AnyStruct>();
+// Unique brand set on every struct created by `sensitive()`. Because the
+// `Struct` constructor copies Symbol-keyed properties from its `props` spread,
+// any wrapper built with `new Struct({ ...sensitiveStruct, ... })` inherits
+// the brand automatically — no manual tracking required.
+const SENSITIVE_BRAND: unique symbol = Symbol('sensitive');
 
 /**
- * Check whether a struct was created by `sensitive()`.
+ * Check whether a struct was created by `sensitive()`, or wraps one.
  *
  * @param struct - The struct to check.
- * @returns `true` if the struct was wrapped with `sensitive()`.
+ * @returns `true` if the struct carries the sensitive brand.
  */
 export function isSensitiveStruct(struct: AnyStruct): boolean {
-  return sensitiveStructs.has(struct);
+  return Object.prototype.hasOwnProperty.call(struct, SENSITIVE_BRAND);
 }
 
 /**
@@ -162,8 +163,14 @@ export function sensitive<Type, Schema>(
     },
   });
 
-  // Register the wrapped struct so that `object()` and `type()` can detect
-  // which schema keys are sensitive and patch sibling-field failures accordingly.
-  sensitiveStructs.add(wrapped as AnyStruct);
+  // Brand the wrapped struct. The `Struct` constructor copies Symbol-keyed
+  // properties on spread, so any wrapper (optional, nullable, exactOptional,
+  // deprecated, ...) automatically inherits this brand without needing changes.
+  Object.defineProperty(wrapped, SENSITIVE_BRAND, {
+    value: true,
+    enumerable: true,
+    configurable: true,
+    writable: false,
+  });
   return wrapped;
 }
