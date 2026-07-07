@@ -1,6 +1,7 @@
 import type { Failure } from '../error.js';
 import type { Context } from '../struct.js';
 import { Struct } from '../struct.js';
+import { isPlainObject } from '../utils.js';
 import type { AnyStruct } from '../utils.js';
 
 export const SENSITIVE_REDACTED = '***';
@@ -72,17 +73,10 @@ export function withRedactedBranch(
         // this specific parent, not an unrelated object at a different depth
         // that might happen to have the same shape.
         branch: failure.branch.map((branchItem) => {
-          if (
-            branchItem !== parentObj ||
-            typeof parentObj !== 'object' ||
-            parentObj === null
-          ) {
+          if (branchItem !== parentObj || !isPlainObject(parentObj)) {
             return branchItem;
           }
-          return redactKeys(
-            parentObj as Record<string, unknown>,
-            sensitiveKeys,
-          );
+          return redactKeys(parentObj, sensitiveKeys);
         }),
       };
     }
