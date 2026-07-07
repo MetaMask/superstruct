@@ -67,7 +67,17 @@ function wrapWithRedaction<Type, Schema>(
       yield {
         ...failure,
         value: SENSITIVE_REDACTED,
-        message: `Expected a value of type \`${struct.type}\`, but received: \`${SENSITIVE_REDACTED}\``,
+        // We cannot safely preserve `failure.message` even for refiner
+        // failures: a refiner that returns `false` gets a default message from
+        // `toFailure` that embeds the raw value. There is no field on `Failure`
+        // that distinguishes a custom refiner string from that generated
+        // default, so preserving the original message risks leaking the
+        // sensitive value. We rebuild the template from scratch, mirroring
+        // `toFailure`'s own default, and include the refinement name when
+        // present so callers can still tell which constraint failed.
+        message: `Expected a value of type \`${struct.type}\`${
+          failure.refinement ? ` with refinement \`${failure.refinement}\`` : ''
+        }, but received: \`${SENSITIVE_REDACTED}\``,
         branch: failure.branch.map(() => SENSITIVE_REDACTED),
       };
     }
