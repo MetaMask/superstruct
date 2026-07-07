@@ -45,6 +45,51 @@ function redactKeys(
 }
 
 /**
+ * Wrap a struct so that every failure it (and any of its entries) emits is
+ * fully redacted: `value` and every item in `branch` are replaced with
+ * `SENSITIVE_REDACTED`. Field structs yielded by `entries` are wrapped
+ * recursively so that nested object failures are covered too.
+ *
+ * This is the internal workhorse for `sensitive()`. It deliberately does NOT
+ * stamp the `SENSITIVE_BRAND` so that only the user-facing wrapper is
+ * detectable via `isSensitiveStruct()`.
+ *
+ * @param struct - The struct to wrap.
+ * @returns The wrapped struct with identical validation logic but fully
+ * redacted failures.
+ */
+function wrapWithRedaction<Type, Schema>(
+  struct: Struct<Type, Schema>,
+): Struct<Type, Schema> {
+  // eslint-disable-next-line jsdoc/require-jsdoc
+  function* redact(failures: Iterable<Failure>): Iterable<Failure> {
+    for (const failure of failures) {
+      yield {
+        ...failure,
+        value: SENSITIVE_REDACTED,
+        message: `Expected a value of type \`${struct.type}\`, but received: \`${SENSITIVE_REDACTED}\``,
+        branch: failure.branch.map(() => SENSITIVE_REDACTED),
+      };
+    }
+  }
+
+  return new Struct({
+    ...struct,
+    validator(value, context): ReturnType<Struct['validator']> {
+      return redact(struct.validator(value, context));
+    },
+    refiner(value: Type, context): ReturnType<Struct['refiner']> {
+      return redact(struct.refiner(value, context));
+    },
+    *entries(value: unknown, context: Context): ReturnType<Struct['entries']> {
+      for (const [key, val, fieldStruct] of struct.entries(value, context)) {
+        yield [key, val, wrapWithRedaction(fieldStruct as AnyStruct)];
+      }
+    },
+  });
+}
+
+/**
  * Wrap a struct so that every failure it emits has any occurrence of
  * `parentObj` in `failure.branch` replaced with a sanitised copy where
  * `sensitiveKeys` are redacted. This prevents the parent object (which holds
@@ -136,27 +181,7 @@ export function withRedactedBranch(
 export function sensitive<Type, Schema>(
   struct: Struct<Type, Schema>,
 ): Struct<Type, Schema> {
-  // eslint-disable-next-line jsdoc/require-jsdoc
-  function* redact(failures: Iterable<Failure>): Iterable<Failure> {
-    for (const failure of failures) {
-      yield {
-        ...failure,
-        value: SENSITIVE_REDACTED,
-        message: `Expected a value of type \`${struct.type}\`, but received: \`${SENSITIVE_REDACTED}\``,
-        branch: failure.branch.map(() => SENSITIVE_REDACTED),
-      };
-    }
-  }
-
-  const wrapped = new Struct({
-    ...struct,
-    validator(value, context): ReturnType<Struct['validator']> {
-      return redact(struct.validator(value, context));
-    },
-    refiner(value: Type, context): ReturnType<Struct['refiner']> {
-      return redact(struct.refiner(value, context));
-    },
-  });
+  const wrapped = wrapWithRedaction(struct);
 
   // Brand the wrapped struct. The `Struct` constructor copies Symbol-keyed
   // properties on spread, so any wrapper (optional, nullable, exactOptional,
