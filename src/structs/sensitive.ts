@@ -1,7 +1,7 @@
 import type { Failure } from '../error.js';
 import type { Context } from '../struct.js';
 import { Struct } from '../struct.js';
-import { isPlainObject } from '../utils.js';
+import { isObject } from '../utils.js';
 import type { AnyStruct } from '../utils.js';
 
 export const SENSITIVE_REDACTED = '***';
@@ -32,9 +32,9 @@ export function isSensitiveStruct(struct: AnyStruct): boolean {
  * @returns A shallow copy with the specified keys replaced.
  */
 function redactKeys(
-  sourceObj: Record<string, unknown>,
+  sourceObj: Record<PropertyKey, unknown>,
   keys: string[],
-): Record<string, unknown> {
+): Record<PropertyKey, unknown> {
   const redacted = { ...sourceObj };
   for (const key of keys) {
     if (key in redacted) {
@@ -128,7 +128,7 @@ export function withRedactedBranch(
         // this specific parent, not an unrelated object at a different depth
         // that might happen to have the same shape.
         branch: failure.branch.map((branchItem) => {
-          if (branchItem !== parentObj || !isPlainObject(parentObj)) {
+          if (branchItem !== parentObj || !isObject(parentObj)) {
             return branchItem;
           }
           return redactKeys(parentObj, sensitiveKeys);
