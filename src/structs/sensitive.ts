@@ -78,7 +78,7 @@ function wrapWithRedaction<Type, Schema>(
         message: `Expected a value of type \`${struct.type}\`${
           failure.refinement ? ` with refinement \`${failure.refinement}\`` : ''
         }, but received: \`${SENSITIVE_REDACTED}\``,
-        branch: failure.branch.map(() => SENSITIVE_REDACTED),
+        branch: new Array(failure.branch.length).fill(SENSITIVE_REDACTED),
       };
     }
   }
