@@ -1,4 +1,4 @@
-import type { Infer } from '../struct.js';
+import type { Context, Infer } from '../struct.js';
 import { ExactOptionalStruct, Struct } from '../struct.js';
 import type {
   ObjectSchema,
@@ -8,7 +8,70 @@ import type {
   UnionToIntersection,
 } from '../utils.js';
 import { print, run, isObject } from '../utils.js';
+import { isSensitiveStruct, withRedactedBranch } from './sensitive.js';
 import { define } from './utilities.js';
+
+/**
+ * Wrap a base struct so that entry-level failures from sibling fields have the
+ * parent object's sensitive keys redacted from their branch. If `schema`
+ * contains no sensitive-marked fields, `base` is returned as-is to avoid the
+ * overhead of wrapping every entry.
+ *
+ * Used by both `object()` and `type()` to share the sensitive-entry wrapping
+ * logic without duplication.
+ *
+ * @param base - The base struct to potentially wrap.
+ * @param schema - The object schema to inspect for sensitive fields.
+ * @returns The wrapped struct, or `base` unchanged when no sensitive fields
+ * are present.
+ */
+function withSensitiveEntries<Type, Schema extends ObjectSchema>(
+  base: Struct<Type, Schema>,
+  schema: Schema,
+): Struct<Type, Schema> {
+  const sensitiveKeys = Object.keys(schema).filter(
+    // `noUncheckedIndexedAccess` makes `schema[key]` return `AnyStruct |
+    // undefined`. After the `!== undefined` guard, TypeScript still treats the
+    // second `schema[key]` access as potentially undefined (it does not
+    // re-narrow repeated index reads), so the cast to `AnyStruct` is required.
+    (key) =>
+      schema[key] !== undefined && isSensitiveStruct(schema[key] as AnyStruct),
+  );
+
+  if (sensitiveKeys.length === 0) {
+    return base;
+  }
+
+  return new Struct({
+    ...base,
+    *entries(value: unknown, context: Context) {
+      // `run` initialises `branch` before coercion runs, so `value` here may
+      // be a freshly-created coerced copy (e.g. `object()`'s `{ ...value }`)
+      // while `context.branch[last]` still holds the original reference that
+      // ends up in failure branches. Using the branch reference ensures the
+      // `===` check inside `withRedactedBranch` matches when coercion is active.
+      // Falls back to `value` if branch is somehow empty (entries called outside
+      // of `run`).
+      const parentInBranch = context.branch[context.branch.length - 1] ?? value;
+      for (const entry of base.entries(value, context)) {
+        const [fieldKey, fieldValue, fieldStruct] = entry;
+        // The entries tuple types the third element as `Struct<any> |
+        // Struct<never>`. `AnyStruct` is `Struct<any, any>`, which differs
+        // only in the second generic. The cast is safe because both forms
+        // represent untyped structs at runtime.
+        yield [
+          fieldKey,
+          fieldValue,
+          withRedactedBranch(
+            fieldStruct as AnyStruct,
+            parentInBranch,
+            sensitiveKeys,
+          ),
+        ];
+      }
+    },
+  });
+}
 
 /**
  * Ensure that any value passes validation.
@@ -448,7 +511,7 @@ export function object<Schema extends ObjectSchema>(
 ): any {
   const knowns = schema ? Object.keys(schema) : [];
   const Never = never();
-  return new Struct({
+  const base: Struct<ObjectType<Schema>, Schema | null> = new Struct({
     type: 'object',
     schema: schema ?? null,
     *entries(value) {
@@ -482,6 +545,19 @@ export function object<Schema extends ObjectSchema>(
       return isObject(value) ? { ...value } : value;
     },
   });
+
+  if (!schema) {
+    return base;
+  }
+
+  // `base` is typed as `Struct<unknown, Schema | null>` because the `Struct`
+  // constructor receives `schema ?? null`. At this point `schema` is defined,
+  // so the schema slot is actually `Schema`. The cast strips the `| null` so
+  // `withSensitiveEntries` can accept it.
+  return withSensitiveEntries(
+    base as Struct<ObjectType<Schema>, Schema>,
+    schema,
+  );
 }
 
 /**
@@ -678,7 +754,7 @@ export function type<Schema extends ObjectSchema>(
   schema: Schema,
 ): Struct<ObjectType<Schema>, Schema> {
   const keys = Object.keys(schema);
-  return new Struct({
+  const base: Struct<ObjectType<Schema>, Schema> = new Struct({
     type: 'type',
     schema,
     *entries(value) {
@@ -703,6 +779,8 @@ export function type<Schema extends ObjectSchema>(
       return isObject(value) ? { ...value } : value;
     },
   });
+
+  return withSensitiveEntries(base, schema);
 }
 
 /**

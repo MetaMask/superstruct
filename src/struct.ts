@@ -70,6 +70,19 @@ export class Struct<Type = unknown, Schema = unknown> {
     } else {
       this.refiner = () => [];
     }
+
+    // Copy Symbol-keyed properties from `props` so that brands set on an inner
+    // struct (e.g. the sensitive marker) are automatically inherited by any
+    // wrapper that spreads the struct into a new constructor call.
+    for (const sym of Object.getOwnPropertySymbols(props)) {
+      Object.defineProperty(
+        this,
+        sym,
+        // No need to check for undefined, since we are iterating over
+        // `Object.getOwnPropertySymbols`.
+        Object.getOwnPropertyDescriptor(props, sym) as PropertyDescriptor,
+      );
+    }
   }
 
   /**
