@@ -4,7 +4,7 @@ import { Struct } from '../struct.js';
 import { isObject } from '../utils.js';
 import type { AnyStruct } from '../utils.js';
 
-export const SENSITIVE_REDACTED = '***';
+const SENSITIVE_REDACTED = '***';
 
 // Global-registry Symbol so the brand is shared across multiple instances of
 // this library loaded in the same runtime (e.g. npm dedup failure). Compare
