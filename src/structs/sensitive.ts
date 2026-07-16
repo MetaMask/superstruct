@@ -177,16 +177,17 @@ export function withRedactedBranch(
           copy[childIndex] = childSanitized;
           branch[ancestorIndex] = copy;
         } else if (ancestor instanceof Map) {
-          // Map entries are not enumerable via Object.keys, so we iterate the
-          // Map itself to find which key holds the original child reference.
+          // Use a flag instead of relying on `undefined` since that could be a valid key in a `Map`.
+          let childFound = false;
           let childKey: unknown;
           for (const [entryKey, entryValue] of ancestor) {
             if (entryValue === child) {
               childKey = entryKey;
+              childFound = true;
               break;
             }
           }
-          if (childKey === undefined) {
+          if (!childFound) {
             break;
           }
           const copy = new Map(ancestor);
