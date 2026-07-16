@@ -121,19 +121,90 @@ export function withRedactedBranch(
   // eslint-disable-next-line jsdoc/require-jsdoc
   function* redactBranch(failures: Iterable<Failure>): Iterable<Failure> {
     for (const failure of failures) {
-      yield {
-        ...failure,
-        // Replace the parent object in the branch with a sanitised copy.
-        // Reference equality (`===`) is intentional: we only want to touch
-        // this specific parent, not an unrelated object at a different depth
-        // that might happen to have the same shape.
-        branch: failure.branch.map((branchItem) => {
-          if (branchItem !== parentObj || !isObject(parentObj)) {
-            return branchItem;
+      if (!isObject(parentObj)) {
+        yield failure;
+        continue;
+      }
+
+      // Locate this specific parent. If it isn't in the branch (e.g. the
+      // failure came from a different scope), pass it through.
+      const parentIndex = failure.branch.indexOf(parentObj);
+      if (parentIndex === -1) {
+        yield failure;
+        continue;
+      }
+
+      // Sanitize the parent entry.
+      const branch = [...failure.branch];
+      branch[parentIndex] = redactKeys(parentObj, sensitiveKeys);
+
+      // Walk backward through every ancestor in the branch. Each ancestor
+      // holds a direct reference to the child below it - without this step,
+      // outer objects would still expose the unredacted child through their
+      // own properties (e.g. root.wrapper.secret would remain visible
+      // even after wrapper was sanitised at branch[1]).
+      //
+      // For each level we use the original child reference to find which
+      // property key points to it (via ===), then replace that entry with
+      // the already-sanitised child from the patched branch.
+      for (
+        let ancestorIndex = parentIndex - 1;
+        ancestorIndex >= 0;
+        ancestorIndex--
+      ) {
+        const ancestor = branch[ancestorIndex];
+
+        // No reference to update in this case.
+        if (!isObject(ancestor)) {
+          break;
+        }
+
+        // Keep the original child reference, so we can detect it.
+        const child = failure.branch[ancestorIndex + 1];
+
+        // The already-sanitised child from the patched branch.
+        const childSanitized = branch[ancestorIndex + 1];
+
+        // If we find the (original) child (not redacted) in one of the ancestor's
+        // properties/entries, we replace it with the redacted version (re-using the same
+        // sanitized child from the patched branch).
+        if (Array.isArray(ancestor)) {
+          const childIndex = ancestor.indexOf(child);
+          if (childIndex === -1) {
+            break;
           }
-          return redactKeys(parentObj, sensitiveKeys);
-        }),
-      };
+          const copy = [...ancestor];
+          copy[childIndex] = childSanitized;
+          branch[ancestorIndex] = copy;
+        } else if (ancestor instanceof Map) {
+          // Use a flag instead of relying on `undefined` since that could be a valid key in a `Map`.
+          let childFound = false;
+          let childKey: unknown;
+          for (const [entryKey, entryValue] of ancestor) {
+            if (entryValue === child) {
+              childKey = entryKey;
+              childFound = true;
+              break;
+            }
+          }
+          if (!childFound) {
+            break;
+          }
+          const copy = new Map(ancestor);
+          copy.set(childKey, childSanitized);
+          branch[ancestorIndex] = copy;
+        } else {
+          const childKey = Object.keys(ancestor).find(
+            (key) => ancestor[key] === child,
+          );
+          if (childKey === undefined) {
+            break;
+          }
+          branch[ancestorIndex] = { ...ancestor, [childKey]: childSanitized };
+        }
+      }
+
+      yield { ...failure, branch };
     }
   }
 
