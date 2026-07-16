@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.4.1]
 
-### Uncategorized
+### Fixed
 
-- fix: fix deep sensitive redaction ([#43](https://github.com/MetaMask/superstruct/pull/43))
+- Fix deep `sensitive` redaction ([#43](https://github.com/MetaMask/superstruct/pull/43))
 
 ## [3.4.0]
 
