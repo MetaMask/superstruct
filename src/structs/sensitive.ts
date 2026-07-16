@@ -165,6 +165,9 @@ export function withRedactedBranch(
         // The already-sanitised child from the patched branch.
         const childSanitized = branch[ancestorIndex + 1];
 
+        // If we find the (original) child (not redacted) in one of the ancestor's
+        // properties/entries, we replace it with the redacted version (re-using the same
+        // sanitized child from the patched branch).
         if (Array.isArray(ancestor)) {
           const childIndex = ancestor.indexOf(child);
           if (childIndex === -1) {
