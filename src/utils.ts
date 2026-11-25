@@ -218,7 +218,7 @@ export function isValid<Type, Schema>(
     )) {
       const innerContext =
         innerKey === undefined
-          ? context
+          ? { path: context.path, branch: context.branch }
           : {
               path: [...context.path, innerKey],
               branch: [...context.branch, innerValue],
