@@ -121,7 +121,45 @@ export function toFailure<Type, Schema>(
 }
 
 /**
+ * The shared result for "no failures". It is frozen so that nobody can
+ * accidentally mutate the one instance every passing check returns.
+ */
+export const NO_FAILURES: Iterable<Failure> = Object.freeze([] as Failure[]);
+
+/**
+ * The shared `entries` for structs without children, so that it can be
+ * recognised and skipped without creating a generator per value.
+ */
+export const NO_ENTRIES = function* noEntries() {
+  /* noop */
+} as Struct['entries'];
+
+/**
  * Convert a validation result to an iterable of failures.
+ *
+ * @param result - The result to convert.
+ * @param context - The context of the validation.
+ * @param struct - The struct being validated.
+ * @param value - The value being validated.
+ * @returns An iterable of failures.
+ */
+export function toFailures<Type, Schema>(
+  result: Result,
+  context: Context,
+  struct: Struct<Type, Schema>,
+  value: any,
+): Iterable<Failure> {
+  // Passing values are by far the most common case, so don't allocate a
+  // generator for them.
+  if (result === true || result === NO_FAILURES) {
+    return NO_FAILURES;
+  }
+
+  return generateFailures(result, context, struct, value);
+}
+
+/**
+ * Lazily convert a validation result to failures.
  *
  * @param result - The result to convert.
  * @param context - The context of the validation.
@@ -130,7 +168,7 @@ export function toFailure<Type, Schema>(
  * @yields The failures.
  * @returns An iterable of failures.
  */
-export function* toFailures<Type, Schema>(
+function* generateFailures<Type, Schema>(
   result: Result,
   context: Context,
   struct: Struct<Type, Schema>,
@@ -148,6 +186,55 @@ export function* toFailures<Type, Schema>(
       yield failure;
     }
   }
+}
+
+/**
+ * Check whether a value passes a struct, without building failure details.
+ *
+ * This is `run` for the case where only the first failure matters: it calls
+ * the validator, entries and refiner in the same order and with the same
+ * context, and stops at the first failure, but skips the per-value generators
+ * and result tuples.
+ *
+ * @param value - The value to check.
+ * @param struct - The struct to check against.
+ * @param context - The location of the value in the root value.
+ * @returns `true` if the value passes the struct.
+ */
+export function isValid<Type, Schema>(
+  value: unknown,
+  struct: Struct<Type, Schema>,
+  context: Context,
+): boolean {
+  const failures = struct.validator(value, context);
+  if (failures !== NO_FAILURES && !failures[Symbol.iterator]().next().done) {
+    return false;
+  }
+
+  if (struct.entries !== NO_ENTRIES) {
+    for (const [innerKey, innerValue, innerStruct] of struct.entries(
+      value,
+      context,
+    )) {
+      const innerContext =
+        innerKey === undefined
+          ? context
+          : {
+              path: [...context.path, innerKey],
+              branch: [...context.branch, innerValue],
+            };
+
+      if (!isValid(innerValue, innerStruct as Struct, innerContext)) {
+        return false;
+      }
+    }
+  }
+
+  const refinerFailures = struct.refiner(value as Type, context);
+  return (
+    refinerFailures === NO_FAILURES ||
+    Boolean(refinerFailures[Symbol.iterator]().next().done)
+  );
 }
 
 /**

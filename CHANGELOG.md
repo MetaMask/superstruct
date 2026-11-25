@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Improve `is` performance by checking values without building failure details ([#45](https://github.com/MetaMask/superstruct/pull/45))
+
 ## [3.4.1]
 
 ### Fixed

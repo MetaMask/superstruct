@@ -1,7 +1,15 @@
 import type { Failure } from './error.js';
 import { StructError } from './error.js';
 import type { StructSchema } from './utils.js';
-import { isObject, toFailures, shiftIterator, run } from './utils.js';
+import {
+  isObject,
+  isValid,
+  NO_ENTRIES,
+  NO_FAILURES,
+  toFailures,
+  shiftIterator,
+  run,
+} from './utils.js';
 
 type StructParams<Type, Schema> = {
   type: string;
@@ -43,9 +51,7 @@ export class Struct<Type = unknown, Schema = unknown> {
       validator,
       refiner,
       coercer = (value: unknown) => value,
-      entries = function* () {
-        /* noop */
-      },
+      entries = NO_ENTRIES,
     } = props;
 
     this.type = type;
@@ -59,7 +65,7 @@ export class Struct<Type = unknown, Schema = unknown> {
         return toFailures(result, context, this, value);
       };
     } else {
-      this.validator = () => [];
+      this.validator = () => NO_FAILURES;
     }
 
     if (refiner) {
@@ -68,7 +74,7 @@ export class Struct<Type = unknown, Schema = unknown> {
         return toFailures(result, context, this, value);
       };
     } else {
-      this.refiner = () => [];
+      this.refiner = () => NO_FAILURES;
     }
 
     // Copy Symbol-keyed properties from `props` so that brands set on an inner
@@ -245,8 +251,7 @@ export function is<Type, Schema>(
   value: unknown,
   struct: Struct<Type, Schema>,
 ): value is Type {
-  const result = validate(value, struct);
-  return !result[0];
+  return isValid(value, struct, { path: [], branch: [value] });
 }
 
 /**

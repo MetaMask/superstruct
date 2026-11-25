@@ -73,10 +73,13 @@ describe('is', () => {
             b: deprecated(string(), log),
           });
 
-        is({ a: 1, b: input.b === 'bad' ? 2 : 'ok' }, make(() => isLogs++));
+        is(
+          { a: 1, b: input.b === 'bad' ? 2 : 'ok' },
+          make(() => (isLogs += 1)),
+        );
         validate(
           { a: 1, b: input.b === 'bad' ? 2 : 'ok' },
-          make(() => validateLogs++),
+          make(() => (validateLogs += 1)),
         );
 
         strictEqual(isLogs, validateLogs);
@@ -90,7 +93,7 @@ describe('is', () => {
           type: 'wrapper',
           schema: null,
           *entries(value) {
-            yield [undefined, value, inner];
+            yield [undefined as unknown as string, value, inner];
           },
         });
 
