@@ -10,7 +10,9 @@ import {
   assert as assertValue,
   create as createValue,
   deprecated,
+  is as isValue,
   StructError,
+  validate,
 } from '../src';
 
 describe('superstruct', () => {
@@ -39,6 +41,12 @@ describe('superstruct', () => {
           // eslint-disable-next-line no-nested-ternary
           const run = only ? it.only : skip ? it.skip : it;
           run(name, () => {
+            assert.strictEqual(
+              isValue(data, Struct),
+              !validate(data, Struct)[0],
+              'is() must agree with validate()',
+            );
+
             let actual;
             let error;
 
